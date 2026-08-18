@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: sun-booking-tours
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/sun_booking_tours}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
