@@ -46,7 +46,7 @@ public class PaymentService {
     private PaymentResponse mapToResponse(Payment payment, String qrUrl) {
         return PaymentResponse.builder()
                 .id(payment.getId())
-                .bookingId(payment.getBooking().getId())
+                .bookingId(payment.getBooking().getId().toString())
                 .amount(payment.getAmount())
                 .transactionReference(payment.getTransactionReference())
                 .status(payment.getStatus())
