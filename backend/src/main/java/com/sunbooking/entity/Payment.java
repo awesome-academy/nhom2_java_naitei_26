@@ -35,4 +35,10 @@ public class Payment extends BaseEntity {
 
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
+
+    @Transient // JPA ignores this field in DB mapping
+    public LocalDateTime getExpiredAt() {
+        if (this.getCreatedAt() == null) return null;
+        return this.getCreatedAt().plusMinutes(15);
+    }
 }
