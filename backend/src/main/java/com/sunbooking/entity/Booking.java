@@ -13,5 +13,3 @@ public class Booking extends BaseEntity {
     private BigDecimal totalPrice;
 
 }
-    private BigDecimal totalPrice;
-}
