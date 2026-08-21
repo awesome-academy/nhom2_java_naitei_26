@@ -72,7 +72,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/auth/**", "/oauth2/**", "/login/oauth2/code/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/places", "/api/food",
-                                                                "/api/news")
+                                                                "/api/news", "/api/reviews/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
