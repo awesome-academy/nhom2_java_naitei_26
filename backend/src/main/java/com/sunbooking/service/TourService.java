@@ -7,6 +7,8 @@ import com.sunbooking.entity.Tour;
 import com.sunbooking.exception.ResourceNotFoundException;
 import com.sunbooking.repository.CategoryRepository;
 import com.sunbooking.repository.TourRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,13 @@ public class TourService {
         return tourRepository.search(normalizedKeyword, categoryId).stream()
                 .map(TourResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TourResponse> search(String keyword, Long categoryId, Pageable pageable) {
+        String normalizedKeyword = keyword == null || keyword.isBlank() ? null : keyword.trim();
+        return tourRepository.search(normalizedKeyword, categoryId, pageable)
+                .map(TourResponse::from);
     }
 
     @Transactional(readOnly = true)

@@ -2,6 +2,8 @@ package com.sunbooking.service;
 
 import com.sunbooking.dto.tour.TourRequest;
 import com.sunbooking.dto.tour.TourResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,10 @@ public class AdminTourService {
 
     public List<TourResponse> findAll(String keyword, Long categoryId) {
         return tourService.search(keyword, categoryId);
+    }
+
+    public Page<TourResponse> findAll(String keyword, Long categoryId, Pageable pageable) {
+        return tourService.search(keyword, categoryId, pageable);
     }
 
     public TourResponse findById(Long id) {
