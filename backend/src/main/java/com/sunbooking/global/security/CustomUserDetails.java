@@ -1,14 +1,15 @@
 package com.sunbooking.global.security;
 
-import com.sunbooking.domain.user.entity.User;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import com.sunbooking.domain.user.entity.User;
 
 public class CustomUserDetails implements UserDetails, OAuth2User {
 
@@ -36,7 +37,10 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
             return Collections.emptyList();
         }
 
-        String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+        String normalizedRole = role.trim().toUpperCase(java.util.Locale.ROOT);
+        String authority = normalizedRole.startsWith("ROLE_")
+            ? normalizedRole
+            : "ROLE_" + normalizedRole;
 
         return Collections.singletonList(new SimpleGrantedAuthority(authority));
     }
