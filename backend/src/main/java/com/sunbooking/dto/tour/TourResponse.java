@@ -6,6 +6,7 @@ import com.sunbooking.entity.TourStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public record TourResponse(
         Long id,
@@ -25,12 +26,16 @@ public record TourResponse(
         LocalDateTime updatedAt
 ) {
     public static TourResponse from(Tour tour) {
+        if (tour == null) {
+            return null;
+        }
+
         CategoryResponse category = tour.getCategory() == null
                 ? null : CategoryResponse.from(tour.getCategory());
-        List<TourImageResponse> images = tour.getImages().stream()
+        List<TourImageResponse> images = Optional.ofNullable(tour.getImages()).orElseGet(List::of).stream()
                 .map(image -> new TourImageResponse(image.getId(), image.getImageUrl()))
                 .toList();
-        List<TourDepartureResponse> departures = tour.getDepartures().stream()
+        List<TourDepartureResponse> departures = Optional.ofNullable(tour.getDepartures()).orElseGet(List::of).stream()
                 .map(TourDepartureResponse::from)
                 .toList();
 

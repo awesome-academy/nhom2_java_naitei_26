@@ -3,7 +3,10 @@ package com.sunbooking.service;
 import com.sunbooking.dto.tour.TourRequest;
 import com.sunbooking.dto.tour.TourResponse;
 import com.sunbooking.entity.Category;
+import com.sunbooking.entity.TourDeparture;
+import com.sunbooking.entity.TourImage;
 import com.sunbooking.entity.Tour;
+import com.sunbooking.entity.TourStatus;
 import com.sunbooking.exception.ResourceNotFoundException;
 import com.sunbooking.repository.CategoryRepository;
 import com.sunbooking.repository.TourRepository;
@@ -61,7 +64,9 @@ public class TourService {
 
     @Transactional
     public void delete(Long id) {
-        tourRepository.delete(findTour(id));
+        Tour tour = findTour(id);
+        tour.setStatus(TourStatus.INACTIVE);
+        tourRepository.save(tour);
     }
 
     private Tour findTour(Long id) {
@@ -70,6 +75,10 @@ public class TourService {
     }
 
     private void apply(Tour tour, TourRequest request) {
+        if (request.startDate().isAfter(request.endDate())) {
+            throw new IllegalArgumentException("startDate must not be after endDate");
+        }
+
         tour.setName(request.name().trim());
         tour.setDescription(request.description());
         tour.setBasePrice(request.basePrice());
@@ -80,6 +89,45 @@ public class TourService {
         tour.setStartDate(request.startDate());
         tour.setEndDate(request.endDate());
         tour.setCategory(resolveCategory(request.categoryId()));
+        updateImages(tour, request.images());
+        updateDepartures(tour, request.departures());
+    }
+
+    private void updateImages(Tour tour, List<TourRequest.TourImageRequest> requests) {
+        if (requests == null) {
+            return;
+        }
+        tour.getImages().clear();
+        requests.forEach(request -> {
+            TourImage image = new TourImage();
+            image.setImageUrl(request.imageUrl().trim());
+            image.setTour(tour);
+            tour.getImages().add(image);
+        });
+    }
+
+    private void updateDepartures(Tour tour, List<TourRequest.TourDepartureRequest> requests) {
+        if (requests == null) {
+            return;
+        }
+        tour.getDepartures().clear();
+        requests.forEach(request -> {
+            if (request.departureDate().isAfter(request.returnDate())) {
+                throw new IllegalArgumentException("departureDate must not be after returnDate");
+            }
+            if (request.availableSlot() > request.totalSlot()) {
+                throw new IllegalArgumentException("availableSlot must not exceed totalSlot");
+            }
+            TourDeparture departure = new TourDeparture();
+            departure.setDepartureDate(request.departureDate());
+            departure.setReturnDate(request.returnDate());
+            departure.setPrice(request.price());
+            departure.setTotalSlot(request.totalSlot());
+            departure.setAvailableSlot(request.availableSlot());
+            departure.setStatus(request.status());
+            departure.setTour(tour);
+            tour.getDepartures().add(departure);
+        });
     }
 
     private Category resolveCategory(Long categoryId) {
