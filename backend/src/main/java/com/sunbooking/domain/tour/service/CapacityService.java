@@ -1,8 +1,6 @@
 package com.sunbooking.domain.tour.service;
 
-import com.sunbooking.domain.tour.entity.TourDeparture;
 import com.sunbooking.domain.tour.repository.TourDepartureRepository;
-import com.sunbooking.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,26 +13,17 @@ public class CapacityService {
 
     @Transactional
     public void reserveCapacity(Long departureId, int slots) {
-        TourDeparture departure = departureRepository.findById(departureId)
-                .orElseThrow(() -> new ResourceNotFoundException("Departure not found"));
+        // Perform atomic update in DB
+        int updatedRows = departureRepository.deductAvailableSlots(departureId, slots);
 
-        // Check availability - field name is 'availableSlot'
-        if (departure.getAvailableSlot() < slots) {
-            throw new RuntimeException("Not enough slots available");
+        // If no rows updated, it means ID not found or Not enough slots
+        if (updatedRows == 0) {
+            throw new RuntimeException("Booking failed: Not enough slots available");
         }
-
-        // Deduct slots
-        departure.setAvailableSlot(departure.getAvailableSlot() - slots);
-        departureRepository.save(departure);
     }
 
     @Transactional
     public void releaseCapacity(Long departureId, int slots) {
-        TourDeparture departure = departureRepository.findById(departureId)
-                .orElseThrow(() -> new ResourceNotFoundException("Departure not found"));
-
-        // Restore slots
-        departure.setAvailableSlot(departure.getAvailableSlot() + slots);
-        departureRepository.save(departure);
+        departureRepository.addAvailableSlots(departureId, slots);
     }
 }
