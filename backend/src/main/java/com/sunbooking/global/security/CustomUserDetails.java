@@ -36,7 +36,8 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
             return Collections.emptyList();
         }
 
-        String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+        String normalizedRole = role.trim().toUpperCase();
+        String authority = normalizedRole.startsWith("ROLE_") ? normalizedRole : "ROLE_" + normalizedRole;
 
         return Collections.singletonList(new SimpleGrantedAuthority(authority));
     }

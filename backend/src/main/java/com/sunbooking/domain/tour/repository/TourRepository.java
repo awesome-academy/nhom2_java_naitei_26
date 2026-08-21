@@ -11,6 +11,10 @@ import java.util.List;
 
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
+    List<Tour> findByCategoryId(Long categoryId);
+
+    Page<Tour> findByCategoryId(Long categoryId, Pageable pageable);
+
     @Query("select distinct t from Tour t left join fetch t.category left join fetch t.images "
         + "where (:keyword is null or lower(t.name) like lower(concat('%', :keyword, '%')) "
         + "or lower(t.destination) like lower(concat('%', :keyword, '%'))) "
