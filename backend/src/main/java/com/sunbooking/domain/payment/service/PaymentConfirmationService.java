@@ -21,21 +21,26 @@ public class PaymentConfirmationService {
 
     @Transactional
     public void confirmPayment(SePayWebhookRequest request) {
-        // Find payment by SePay content (transaction reference)
+        // Find payment by reference (content field in SePay)
         Payment payment = paymentRepository.findByTransactionReference(request.getContent())
                 .orElseThrow(() -> new RuntimeException("Payment reference not found"));
 
+        // Idempotency check: Only process if PENDING
         // Idempotency: Skip if already processed
         if (payment.getStatus() != PaymentStatus.PENDING) {
             return;
         }
 
+        // Update payment details
         // 1. Update Payment status to SUCCESS
         payment.setStatus(PaymentStatus.SUCCESS);
+        payment.setExternalTransactionId(request.getCode()); // Bank transaction code
         payment.setExternalTransactionId(request.getCode());
         payment.setPaidAt(LocalDateTime.now());
+
         paymentRepository.save(payment);
 
+        // SUCCESS status here permanently secures the slots.
         // 2. Update linked Booking status to CONFIRMED
         Booking booking = payment.getBooking();
         booking.setStatus(BookingStatus.CONFIRMED);

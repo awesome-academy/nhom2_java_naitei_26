@@ -24,10 +24,10 @@
 - [x] T014 [US1] [BE-AUTH] Implement registration and login in `backend/src/main/java/com/sunbooking/service/AuthService.java`
 - [x] T015 [US1] [BE-AUTH] Implement social login in `backend/src/main/java/com/sunbooking/service/SocialAuthService.java`
 - [x] T016 [US1] [BE-AUTH] Implement auth APIs in `backend/src/main/java/com/sunbooking/controller/AuthController.java`
-- [ ] T017 [P] [US1] [FE-AUTH] Setup AuthContext for frontend state in `frontend/src/context/AuthContext.tsx`
-- [ ] T018 [US1] [FE-AUTH] Implement auth API client in `frontend/src/services/authService.ts`
-- [ ] T019 [P] [US1] [FE-AUTH] Create Login page in `frontend/src/pages/auth/LoginPage.tsx`
-- [ ] T020 [P] [US1] [FE-AUTH] Create Register page in `frontend/src/pages/auth/RegisterPage.tsx`
+- [x] T017 [P] [US1] [FE-AUTH] Setup AuthContext for frontend state in `frontend/src/context/AuthContext.tsx`
+- [x] T018 [US1] [FE-AUTH] Implement auth API client in `frontend/src/services/authService.ts`
+- [x] T019 [P] [US1] [FE-AUTH] Create Login page in `frontend/src/pages/auth/LoginPage.tsx`
+- [x] T020 [P] [US1] [FE-AUTH] Create Register page in `frontend/src/pages/auth/RegisterPage.tsx`
 
 ## Phase 4: User Profile (US1)
 
@@ -161,8 +161,8 @@
 
 ## Phase 14: Admin Booking Management (US5)
 
-- [ ] T121 [US5] [BE-ADMIN] Implement Admin Booking operations in `backend/src/main/java/com/sunbooking/service/AdminBookingService.java`
-- [ ] T122 [US5] [BE-ADMIN] Implement `AdminBookingController` in `backend/src/main/java/com/sunbooking/controller/admin/AdminBookingController.java`
+- [x] T121 [US5] [BE-ADMIN] Implement Admin Booking operations in `backend/src/main/java/com/sunbooking/service/AdminBookingService.java`
+- [x] T122 [US5] [BE-ADMIN] Implement `AdminBookingController` in `backend/src/main/java/com/sunbooking/controller/admin/AdminBookingController.java`
 - [ ] T123 [P] [US5] [FE-ADMIN] Implement admin bookings API client in `frontend/src/services/admin/adminBookingService.ts`
 - [ ] T124 [US5] [FE-ADMIN] Create Admin bookings page in `frontend/src/pages/admin/AdminBookingsPage.tsx`
 
