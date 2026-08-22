@@ -43,12 +43,12 @@ public class AdminContentController {
 
     @GetMapping("/places")
     public List<PlaceResponse> listPlaces() {
-        return placeService.findAll();
+        return placeService.findAllAdmin();
     }
 
     @GetMapping("/places/{id}")
     public PlaceResponse getPlace(@PathVariable Long id) {
-        return placeService.findById(id);
+        return placeService.findByIdAdmin(id);
     }
 
     @PostMapping("/places")
@@ -70,12 +70,12 @@ public class AdminContentController {
 
     @GetMapping("/food")
     public List<FoodResponse> listFood() {
-        return foodService.findAll();
+        return foodService.findAllAdmin();
     }
 
     @GetMapping("/food/{id}")
     public FoodResponse getFood(@PathVariable Long id) {
-        return foodService.findById(id);
+        return foodService.findByIdAdmin(id);
     }
 
     @PostMapping("/food")
@@ -97,12 +97,12 @@ public class AdminContentController {
 
     @GetMapping("/news")
     public List<NewsResponse> listNews() {
-        return newsService.findAll();
+        return newsService.findAllAdmin();
     }
 
     @GetMapping("/news/{id}")
     public NewsResponse getNews(@PathVariable Long id) {
-        return newsService.findById(id);
+        return newsService.findByIdAdmin(id);
     }
 
     @PostMapping("/news")

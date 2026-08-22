@@ -25,13 +25,25 @@ public class FoodService {
 
     @Transactional(readOnly = true)
     public List<FoodResponse> findAll() {
-        return foodRepository.findAll().stream()
+        return foodRepository.findByStatusIgnoreCase("ACTIVE").stream()
                 .map(FoodResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public FoodResponse findById(Long id) {
+        return FoodResponse.from(findActiveFood(id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<FoodResponse> findAllAdmin() {
+        return foodRepository.findAll().stream()
+                .map(FoodResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public FoodResponse findByIdAdmin(Long id) {
         return FoodResponse.from(findFood(id));
     }
 
@@ -59,6 +71,14 @@ public class FoodService {
     private Food findFood(Long id) {
         return foodRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Food not found: " + id));
+    }
+
+    private Food findActiveFood(Long id) {
+        Food food = findFood(id);
+        if (!"ACTIVE".equalsIgnoreCase(food.getStatus())) {
+            throw new ResourceNotFoundException("Food not found: " + id);
+        }
+        return food;
     }
 
     private void apply(Food food, FoodRequest request) {

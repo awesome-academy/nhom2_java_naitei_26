@@ -22,13 +22,25 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceResponse> findAll() {
-        return placeRepository.findAll().stream()
+        return placeRepository.findByStatusIgnoreCase("ACTIVE").stream()
                 .map(PlaceResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public PlaceResponse findById(Long id) {
+        return PlaceResponse.from(findActivePlace(id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceResponse> findAllAdmin() {
+        return placeRepository.findAll().stream()
+                .map(PlaceResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PlaceResponse findByIdAdmin(Long id) {
         return PlaceResponse.from(findPlace(id));
     }
 
@@ -56,6 +68,14 @@ public class PlaceService {
     private Place findPlace(Long id) {
         return placeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found: " + id));
+    }
+
+    private Place findActivePlace(Long id) {
+        Place place = findPlace(id);
+        if (!"ACTIVE".equalsIgnoreCase(place.getStatus())) {
+            throw new ResourceNotFoundException("Place not found: " + id);
+        }
+        return place;
     }
 
     private void apply(Place place, PlaceRequest request) {
