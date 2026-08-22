@@ -39,31 +39,21 @@ public class TourService {
 
     @Transactional(readOnly = true)
     public List<TourResponse> search(String keyword, Long categoryId) {
-        String normalizedKeyword = keyword == null || keyword.isBlank() ? null : keyword.trim();
-        List<Tour> tours = normalizedKeyword == null
-                ? findWithoutKeyword(categoryId)
-                : tourRepository.search(normalizedKeyword, categoryId);
-        return tours.stream()
+        String normalizedKeyword = normalizeKeyword(keyword);
+        return tourRepository.search(normalizedKeyword, categoryId).stream()
                 .map(TourResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public Page<TourResponse> search(String keyword, Long categoryId, Pageable pageable) {
-        String normalizedKeyword = keyword == null || keyword.isBlank() ? null : keyword.trim();
-        Page<Tour> tours = normalizedKeyword == null
-                ? findWithoutKeyword(categoryId, pageable)
-                : tourRepository.search(normalizedKeyword, categoryId, pageable);
-        return tours
+        String normalizedKeyword = normalizeKeyword(keyword);
+        return tourRepository.search(normalizedKeyword, categoryId, pageable)
                 .map(TourResponse::from);
     }
 
-    private List<Tour> findWithoutKeyword(Long categoryId) {
-        return categoryId == null ? tourRepository.findAll() : tourRepository.findByCategoryId(categoryId);
-    }
-
-    private Page<Tour> findWithoutKeyword(Long categoryId, Pageable pageable) {
-        return categoryId == null ? tourRepository.findAll(pageable) : tourRepository.findByCategoryId(categoryId, pageable);
+    private String normalizeKeyword(String keyword) {
+        return keyword == null || keyword.isBlank() ? "" : keyword.trim();
     }
 
     @Transactional(readOnly = true)
