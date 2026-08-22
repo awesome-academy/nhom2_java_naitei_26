@@ -2,6 +2,8 @@ package com.sunbooking.domain.review.dto;
 
 import com.sunbooking.domain.booking.entity.Booking;
 import com.sunbooking.domain.review.entity.Review;
+import com.sunbooking.domain.tour.entity.Tour;
+import com.sunbooking.domain.tour.entity.TourDeparture;
 import com.sunbooking.domain.user.entity.User;
 
 import java.time.LocalDateTime;
@@ -24,7 +26,9 @@ public record ReviewResponse(
 ) {
     public static ReviewResponse from(Review review) {
         Booking booking = review.getBooking();
-        User user = booking.getUser();
+        User user = booking != null ? booking.getUser() : null;
+        TourDeparture departure = booking != null ? booking.getDeparture() : null;
+        Tour tour = departure != null ? departure.getTour() : null;
 
         List<ReviewImageResponse> images = Optional.ofNullable(review.getImages())
                 .orElseGet(List::of)
@@ -34,12 +38,12 @@ public record ReviewResponse(
 
         return new ReviewResponse(
                 review.getId(),
-                booking.getId(),
-                booking.getDeparture().getTour().getId(),
-                booking.getDeparture().getTour().getName(),
-                user.getId(),
-                user.getFullName(),
-                user.getAvatar(),
+                booking != null ? booking.getId() : null,
+                tour != null ? tour.getId() : null,
+                tour != null ? tour.getName() : null,
+                user != null ? user.getId() : null,
+                user != null ? user.getFullName() : null,
+                user != null ? user.getAvatar() : null,
                 review.getContent(),
                 review.getRating(),
                 images,
