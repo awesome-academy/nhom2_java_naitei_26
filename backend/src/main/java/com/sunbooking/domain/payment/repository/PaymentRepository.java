@@ -14,6 +14,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // Find payment by reference for Webhook processing
     Optional<Payment> findByTransactionReference(String transactionReference);
 
+    // This for Admin Booking Details view
+    Optional<Payment> findTopByBooking_IdOrderByCreatedAtDesc(Long bookingId);
+
     // Find pending payments for cleanup job
     List<Payment> findByStatusAndCreatedAtBefore(PaymentStatus status, LocalDateTime dateTime);
 }
