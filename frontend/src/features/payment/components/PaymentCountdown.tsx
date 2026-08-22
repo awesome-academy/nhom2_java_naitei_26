@@ -9,14 +9,21 @@ const PaymentCountdown = ({ expiredAt, onExpire }: Props) => {
         const calculate = () => {
             const diff = Math.floor((new Date(expiredAt).getTime() - Date.now()) / 1000);
             if (diff <= 0) {
+                //Clear interval immediately when time is up
                 setTimeLeft(0);
-                onExpire(); // Trigger when timeout
-            } else {
-                setTimeLeft(diff);
+                onExpire();
+                return true; // Signal to stop
             }
+            setTimeLeft(diff);
+            return false;
         };
+
+        const timer = setInterval(() => {
+            const isDone = calculate();
+            if (isDone) clearInterval(timer);
+        }, 1000);
+
         calculate();
-        const timer = setInterval(calculate, 1000);
         return () => clearInterval(timer);
     }, [expiredAt, onExpire]);
 
