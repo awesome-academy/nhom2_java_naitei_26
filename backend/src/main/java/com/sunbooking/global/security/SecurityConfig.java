@@ -76,6 +76,9 @@ public class SecurityConfig {
                                                                 "/api/food", "/api/food/**", "/api/news",
                                                                 "/api/news/**")
                                                 .permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/tours/**",
+                                                                "/api/categories/**")
+                                                .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
                                                 .authorizationEndpoint(authorization -> authorization
