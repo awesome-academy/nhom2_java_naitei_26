@@ -338,7 +338,7 @@ export default function AdminCategoriesPage() {
                           <Trash2Icon className="size-3.5" />
                         </Button>
                       </TableCell>
-                    </tr>
+                    </TableRow>
                   ))
                 ) : (
                   <TableRow>
