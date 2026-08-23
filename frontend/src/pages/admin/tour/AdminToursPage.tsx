@@ -15,14 +15,12 @@ import type { BackendTourResponse } from "@/features/tour/services/tour.service"
 import { formatPrice } from "@/constants/mockData";
 import {
   ArrowLeftIcon,
-  DownloadIcon,
   PlusCircleIcon,
   SearchIcon,
   CompassIcon,
   PencilIcon,
   ArchiveIcon,
   XIcon,
-  CheckCircle2Icon,
   Loader2Icon,
   EyeIcon,
   CalendarIcon,
@@ -30,7 +28,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   FilterIcon,
-  TrendingUpIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -98,10 +95,10 @@ export default function AdminToursPage() {
   }>({
     name: "",
     description: "",
- basePrice: 1000000,
+    basePrice: 1000000,
     departure: "Hà Nội",
     destination: "",
-    duration: "3 Ngày 2 Đêm",
+    duration: "3 Days 2 Nights",
     status: "PUBLISHED",
     startDate: "2026-09-01T00:00:00",
     endDate: "2026-12-31T23:59:59",
@@ -121,7 +118,7 @@ export default function AdminToursPage() {
       .then((data) => setToursData(data))
       .catch((err) => {
         console.error(err);
-        toast.error("Không thể tải danh sách tour!");
+        toast.error("Failed to load tours list!");
       })
       .finally(() => setLoading(false));
   }, [keyword, selectedCategory, page]);
@@ -139,12 +136,6 @@ export default function AdminToursPage() {
     fetchTours();
   }, [fetchTours]);
 
-  const handleExport = () => {
-    toast.success("Xuất dữ liệu Tour", {
-      description: "File CSV danh sách các gói Tour du lịch đã khởi tạo thành công.",
-    });
-  };
-
   const handleOpenCreateModal = () => {
     setEditingId(null);
     setActiveTab("general");
@@ -154,7 +145,7 @@ export default function AdminToursPage() {
       basePrice: 1000000,
       departure: "Hà Nội",
       destination: "",
-      duration: "3 Ngày 2 Đêm",
+      duration: "3 Days 2 Nights",
       status: "PUBLISHED",
       startDate: new Date().toISOString().slice(0, 19),
       endDate: new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 19),
@@ -208,18 +199,18 @@ export default function AdminToursPage() {
       setIsModalOpen(true);
     } catch (err) {
       console.error(err);
-      toast.error("Không thể tải thông tin chi tiết tour!");
+      toast.error("Failed to load tour details!");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      toast.error("Vui lòng nhập tên Tour!");
+      toast.error("Please enter Tour Name!");
       return;
     }
     if (!formData.categoryId) {
-      toast.error("Vui lòng chọn danh mục cho Tour!");
+      toast.error("Please select a Category!");
       return;
     }
 
@@ -242,16 +233,16 @@ export default function AdminToursPage() {
     try {
       if (editingId) {
         await updateAdminTour(editingId, payload);
-        toast.success("Cập nhật Tour thành công!");
+        toast.success("Tour updated successfully!");
       } else {
         await createAdminTour(payload);
-        toast.success("Tạo Tour mới thành công!");
+        toast.success("New Tour created successfully!");
       }
       setIsModalOpen(false);
       fetchTours();
     } catch (err: any) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Có lỗi xảy ra khi lưu Tour!");
+      toast.error(err?.response?.data?.message || "Failed to save Tour!");
     } finally {
       setSubmitting(false);
     }
@@ -262,12 +253,12 @@ export default function AdminToursPage() {
     setDeleting(true);
     try {
       await deleteAdminTour(softDeletingId);
-      toast.success(`Đã chuyển Tour #${softDeletingId} sang trạng thái Ngừng hoạt động (Xóa mềm)!`);
+      toast.success(`Tour #${softDeletingId} status changed to INACTIVE (Soft Delete)!`);
       setSoftDeletingId(null);
       fetchTours();
     } catch (err: any) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Không thể thực hiện xóa mềm Tour này!");
+      toast.error(err?.response?.data?.message || "Failed to soft delete this Tour!");
     } finally {
       setDeleting(false);
     }
@@ -334,108 +325,61 @@ export default function AdminToursPage() {
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-1"
           >
             <ArrowLeftIcon className="size-3.5" />
-            <span>Quay lại Dashboard</span>
+            <span>Back to Dashboard</span>
           </Link>
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Quản lý Tour Du Lịch
+            Manage Tour Packages
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Quản lý thông tin gói Tour, hình ảnh hành trình và lịch khởi hành cho khách đặt.
+            Manage tour packages, itinerary images, and departure schedules for customer reservations.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            className="text-xs gap-1.5 shadow-2xs hover:bg-muted"
-          >
-            <DownloadIcon className="size-3.5" />
-            <span>Export</span>
-          </Button>
           <Button
             size="sm"
             onClick={handleOpenCreateModal}
             className="text-xs gap-1.5 shadow-2xs bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <PlusCircleIcon className="size-3.5" />
-            <span>Tạo Tour mới</span>
+            <span>Create Tour</span>
           </Button>
         </div>
       </div>
 
-      {/* KPI / Metric Cards Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Metric Cards Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Tổng số Tour
+              Total Tours
             </CardDescription>
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
               {toursData.totalElements}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
-              <TrendingUpIcon className="size-3" />
-              <span>Gói tour đang quản lý</span>
-            </div>
-          </CardContent>
         </Card>
 
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Tour Đang bán (Published)
+              Published Tours
             </CardDescription>
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
               {publishedToursCount}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
-              <CheckCircle2Icon className="size-3" />
-              <span>Hiển thị công khai trên web</span>
-            </div>
-          </CardContent>
         </Card>
 
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Lịch khởi hành mở
+              Scheduled Departures
             </CardDescription>
             <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              {totalDeparturesCount} Lịch
+              {totalDeparturesCount}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <CalendarIcon className="size-3 text-primary" />
-              <span>Sẵn sàng tiếp nhận đặt chỗ</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Trạng thái API
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              <span>Operational</span>
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <span>Trừ số chỗ khả dụng tự động</span>
-            </div>
-          </CardContent>
         </Card>
       </div>
 
@@ -446,10 +390,10 @@ export default function AdminToursPage() {
             <div>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <CompassIcon className="size-4 text-primary" />
-                <span>Danh sách Tour Du Lịch</span>
+                <span>Tours Directory</span>
               </CardTitle>
               <CardDescription className="text-xs">
-                Quản lý, tìm kiếm, xem chi tiết và cập nhật lịch trình các gói tour.
+                Manage, search, review details, and update tour package schedules.
               </CardDescription>
             </div>
 
@@ -458,7 +402,7 @@ export default function AdminToursPage() {
               <div className="relative w-full sm:w-60">
                 <SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Tìm kiếm theo tên, địa danh..."
+                  placeholder="Search tours..."
                   value={keyword}
                   onChange={(e) => {
                     setKeyword(e.target.value);
@@ -478,7 +422,7 @@ export default function AdminToursPage() {
                   }}
                   className="bg-transparent text-foreground font-medium focus:outline-none cursor-pointer text-xs"
                 >
-                  <option value="">Tất cả danh mục</option>
+                  <option value="">All Categories</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -500,13 +444,14 @@ export default function AdminToursPage() {
               <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead className="text-xs font-semibold pl-6 w-16">ID</TableHead>
-                  <TableHead className="text-xs font-semibold">Tour & Thời lượng</TableHead>
-                  <TableHead className="text-xs font-semibold">Danh mục</TableHead>
-                  <TableHead className="text-xs font-semibold">Khởi hành ➔ Điểm đến</TableHead>
-                  <TableHead className="text-xs font-semibold">Giá gốc</TableHead>
-                  <TableHead className="text-xs font-semibold">Lịch mở</TableHead>
-                  <TableHead className="text-xs font-semibold">Trạng thái</TableHead>
-                  <TableHead className="text-xs font-semibold text-right pr-6">Thao tác</TableHead>
+                  <TableHead className="text-xs font-semibold">Tour</TableHead>
+                  <TableHead className="text-xs font-semibold">Duration</TableHead>
+                  <TableHead className="text-xs font-semibold">Category</TableHead>
+                  <TableHead className="text-xs font-semibold">Route</TableHead>
+                  <TableHead className="text-xs font-semibold">Base Price</TableHead>
+                  <TableHead className="text-xs font-semibold">Departures</TableHead>
+                  <TableHead className="text-xs font-semibold">Status</TableHead>
+                  <TableHead className="text-xs font-semibold text-right pr-6">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -520,7 +465,7 @@ export default function AdminToursPage() {
                         <TableCell className="font-mono text-xs font-semibold text-muted-foreground pl-6">
                           #{tour.id}
                         </TableCell>
-                        <TableCell className="font-bold text-xs text-foreground max-w-[220px]">
+                        <TableCell className="font-bold text-xs text-foreground max-w-[200px]">
                           <div className="flex items-center gap-3">
                             <img
                               src={
@@ -531,11 +476,11 @@ export default function AdminToursPage() {
                               alt={tour.name}
                               className="size-10 rounded-lg object-cover bg-muted shrink-0 border border-border"
                             />
-                            <div className="min-w-0">
-                              <div className="font-bold text-foreground truncate">{tour.name}</div>
-                              <div className="text-[11px] text-muted-foreground font-normal">{tour.duration}</div>
-                            </div>
+                            <div className="min-w-0 font-bold text-foreground truncate">{tour.name}</div>
                           </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground font-medium">
+                          {tour.duration || "N/A"}
                         </TableCell>
                         <TableCell className="text-xs font-semibold text-muted-foreground">
                           {tour.category?.name || "N/A"}
@@ -549,7 +494,7 @@ export default function AdminToursPage() {
                         <TableCell className="text-xs">
                           <Badge variant="outline" className="gap-1 font-semibold">
                             <CalendarIcon className="size-3 text-muted-foreground" />
-                            {tour.departures?.length || 0} lịch
+                            {tour.departures?.length || 0} dates
                           </Badge>
                         </TableCell>
                         <TableCell className="text-xs">
@@ -577,7 +522,7 @@ export default function AdminToursPage() {
                             size="icon"
                             className="size-8 text-muted-foreground hover:text-foreground"
                             onClick={() => setPreviewTour(tour)}
-                            title="Xem chi tiết"
+                            title="View Detail"
                           >
                             <EyeIcon className="size-3.5" />
                           </Button>
@@ -586,7 +531,7 @@ export default function AdminToursPage() {
                             size="icon"
                             className="size-8 text-muted-foreground hover:text-primary"
                             onClick={() => handleOpenEditModal(tour)}
-                            title="Chỉnh sửa tour"
+                            title="Edit Tour"
                           >
                             <PencilIcon className="size-3.5" />
                           </Button>
@@ -595,7 +540,7 @@ export default function AdminToursPage() {
                             size="icon"
                             className="size-8 text-muted-foreground hover:text-amber-600"
                             onClick={() => setSoftDeletingId(tour.id)}
-                            title="Xóa mềm (Ngừng hoạt động)"
+                            title="Soft Delete (Set Inactive)"
                           >
                             <ArchiveIcon className="size-3.5" />
                           </Button>
@@ -605,8 +550,8 @@ export default function AdminToursPage() {
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center text-xs text-muted-foreground">
-                      Không tìm thấy tour nào phù hợp.
+                    <TableCell colSpan={9} className="h-24 text-center text-xs text-muted-foreground">
+                      No matching tours found.
                     </TableCell>
                   </TableRow>
                 )}
@@ -617,7 +562,7 @@ export default function AdminToursPage() {
           {/* Table Footer / Pagination */}
           <div className="flex items-center justify-between px-6 py-3 border-t text-xs text-muted-foreground">
             <div>
-              Trang <span className="font-semibold text-foreground">{page + 1}</span> / {toursData.totalPages} ({toursData.totalElements} tour)
+              Page <span className="font-semibold text-foreground">{page + 1}</span> of {toursData.totalPages} ({toursData.totalElements} tours)
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -650,10 +595,10 @@ export default function AdminToursPage() {
             <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
               <div>
                 <CardTitle className="text-lg font-bold">
-                  {editingId ? `Chỉnh sửa Tour #${editingId}` : "Tạo mới Tour Du Lịch"}
+                  {editingId ? `Edit Tour #${editingId}` : "Create New Tour"}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Điền thông tin chung, hình ảnh hành trình và thiết lập lịch khởi hành.
+                  Fill in general information, itinerary images, and departure dates.
                 </CardDescription>
               </div>
               <Button
@@ -677,7 +622,7 @@ export default function AdminToursPage() {
                     : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
-                1. Thông tin chung
+                1. General Information
               </button>
               <button
                 type="button"
@@ -689,7 +634,7 @@ export default function AdminToursPage() {
                 }`}
               >
                 <ImageIcon className="size-3.5" />
-                <span>2. Hình ảnh ({formData.images.length})</span>
+                <span>2. Images ({formData.images.length})</span>
               </button>
               <button
                 type="button"
@@ -701,7 +646,7 @@ export default function AdminToursPage() {
                 }`}
               >
                 <CalendarIcon className="size-3.5" />
-                <span>3. Lịch khởi hành ({formData.departures.length})</span>
+                <span>3. Departures ({formData.departures.length})</span>
               </button>
             </div>
 
@@ -712,20 +657,20 @@ export default function AdminToursPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2 space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Tên Tour <span className="text-destructive">*</span>
+                        Tour Name <span className="text-destructive">*</span>
                       </label>
                       <Input
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Ví dụ: Tour Du Thuyền Vịnh Hạ Long 5 Sao..."
+                        placeholder="e.g. Ha Long Bay Luxury Cruise 5 Stars..."
                         className="text-xs h-9"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Danh mục <span className="text-destructive">*</span>
+                        Category <span className="text-destructive">*</span>
                       </label>
                       <select
                         value={formData.categoryId}
@@ -742,7 +687,7 @@ export default function AdminToursPage() {
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Giá khởi điểm (VNĐ) <span className="text-destructive">*</span>
+                        Base Price (VND) <span className="text-destructive">*</span>
                       </label>
                       <Input
                         type="number"
@@ -756,65 +701,65 @@ export default function AdminToursPage() {
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Điểm khởi hành
+                        Departure Location
                       </label>
                       <Input
                         value={formData.departure}
                         onChange={(e) => setFormData({ ...formData, departure: e.target.value })}
-                        placeholder="Hà Nội, TP.HCM, Đà Nẵng..."
+                        placeholder="Hanoi, Ho Chi Minh, Da Nang..."
                         className="text-xs h-9"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Điểm đến
+                        Destination
                       </label>
                       <Input
                         value={formData.destination}
                         onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                        placeholder="Vịnh Hạ Long, Sapa, Phú Quốc..."
+                        placeholder="Ha Long Bay, Sapa, Phu Quoc..."
                         className="text-xs h-9"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Thời lượng tour
+                        Duration
                       </label>
                       <Input
                         value={formData.duration}
                         onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                        placeholder="3 Ngày 2 Đêm, 1 Ngày..."
+                        placeholder="3 Days 2 Nights, 1 Day..."
                         className="text-xs h-9"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Trạng thái Tour
+                        Tour Status
                       </label>
                       <select
                         value={formData.status}
                         onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                         className="w-full h-9 rounded-md border border-input bg-background px-3 text-xs shadow-2xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-semibold"
                       >
-                        <option value="PUBLISHED">PUBLISHED (Hiển thị - Mở bán)</option>
-                        <option value="DRAFT">DRAFT (Bản nháp)</option>
-                        <option value="INACTIVE">INACTIVE (Ngừng hoạt động / Đã ẩn)</option>
-                        <option value="ARCHIVED">ARCHIVED (Lưu trữ)</option>
+                        <option value="PUBLISHED">PUBLISHED (Visible - For Sale)</option>
+                        <option value="DRAFT">DRAFT (Draft copy)</option>
+                        <option value="INACTIVE">INACTIVE (Hidden / Disabled)</option>
+                        <option value="ARCHIVED">ARCHIVED (Archived)</option>
                       </select>
                     </div>
 
                     <div className="sm:col-span-2 space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Mô tả chi tiết Tour
+                        Tour Description
                       </label>
                       <textarea
                         rows={4}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Nhập chi tiết mô tả hành trình tour..."
+                        placeholder="Detailed itinerary and tour package details..."
                         className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-2xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       />
                     </div>
@@ -826,7 +771,7 @@ export default function AdminToursPage() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Danh sách URL Hình ảnh
+                        Image URLs List
                       </span>
                       <Button
                         type="button"
@@ -836,7 +781,7 @@ export default function AdminToursPage() {
                         className="text-xs text-primary gap-1"
                       >
                         <PlusCircleIcon className="size-3.5" />
-                        <span>Thêm ảnh</span>
+                        <span>Add Image</span>
                       </Button>
                     </div>
 
@@ -870,7 +815,7 @@ export default function AdminToursPage() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Lịch khởi hành
+                        Departure Dates & Pricing
                       </span>
                       <Button
                         type="button"
@@ -880,7 +825,7 @@ export default function AdminToursPage() {
                         className="text-xs text-primary gap-1"
                       >
                         <PlusCircleIcon className="size-3.5" />
-                        <span>Thêm ngày đi</span>
+                        <span>Add Departure Date</span>
                       </Button>
                     </div>
 
@@ -890,7 +835,7 @@ export default function AdminToursPage() {
                         className="p-3 rounded-lg bg-muted/30 border border-border grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2"
                       >
                         <div>
-                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Ngày đi</label>
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Departure</label>
                           <Input
                             type="date"
                             value={dep.departureDate}
@@ -899,7 +844,7 @@ export default function AdminToursPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Ngày về</label>
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Return Date</label>
                           <Input
                             type="date"
                             value={dep.returnDate}
@@ -908,7 +853,7 @@ export default function AdminToursPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Giá vé</label>
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Price (VND)</label>
                           <Input
                             type="number"
                             value={dep.price}
@@ -917,7 +862,7 @@ export default function AdminToursPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Tổng chỗ</label>
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Total Slots</label>
                           <Input
                             type="number"
                             value={dep.totalSlot}
@@ -926,7 +871,7 @@ export default function AdminToursPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Còn trống</label>
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase">Available</label>
                           <Input
                             type="number"
                             value={dep.availableSlot}
@@ -936,7 +881,7 @@ export default function AdminToursPage() {
                         </div>
                         <div className="flex items-center justify-between gap-1">
                           <div className="flex-1">
-                            <label className="text-[10px] font-semibold text-muted-foreground uppercase">Trạng thái</label>
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase">Status</label>
                             <select
                               value={dep.status}
                               onChange={(e) => updateDepartureField(idx, "status", e.target.value)}
@@ -972,7 +917,7 @@ export default function AdminToursPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="text-xs"
                 >
-                  Hủy
+                  Cancel
                 </Button>
                 <Button
                   type="submit"
@@ -981,7 +926,7 @@ export default function AdminToursPage() {
                   className="text-xs bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5"
                 >
                   {submitting && <Loader2Icon className="size-3.5 animate-spin" />}
-                  <span>{editingId ? "Cập nhật Tour" : "Tạo mới Tour"}</span>
+                  <span>{editingId ? "Update Tour" : "Create Tour"}</span>
                 </Button>
               </div>
             </form>
@@ -1025,27 +970,27 @@ export default function AdminToursPage() {
 
             <div className="grid grid-cols-2 gap-3 text-xs bg-muted/40 p-3 rounded-lg">
               <div>
-                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Giá khởi điểm:</span>
+                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Base Price:</span>
                 <span className="font-bold text-primary text-sm font-mono">{formatPrice(previewTour.basePrice)}</span>
               </div>
               <div>
-                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Thời lượng:</span>
+                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Duration:</span>
                 <span className="font-medium text-foreground">{previewTour.duration || "N/A"}</span>
               </div>
               <div>
-                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Khởi hành:</span>
+                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Departure:</span>
                 <span className="font-medium text-foreground">{previewTour.departure || "N/A"}</span>
               </div>
               <div>
-                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Điểm đến:</span>
+                <span className="text-muted-foreground block font-semibold uppercase text-[10px]">Destination:</span>
                 <span className="font-medium text-foreground">{previewTour.destination || "N/A"}</span>
               </div>
             </div>
 
             <div>
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-1">Mô tả:</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-1">Description:</h4>
               <p className="text-xs text-foreground leading-relaxed bg-background p-3 rounded-lg border">
-                {previewTour.description || "Chưa có thông tin mô tả."}
+                {previewTour.description || "No description provided."}
               </p>
             </div>
           </Card>
@@ -1060,9 +1005,9 @@ export default function AdminToursPage() {
               <div className="size-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-2">
                 <ArchiveIcon className="size-5" />
               </div>
-              <CardTitle className="text-base font-bold">Xác nhận xóa mềm Tour #{softDeletingId}?</CardTitle>
+              <CardTitle className="text-base font-bold">Confirm Soft Delete Tour #{softDeletingId}?</CardTitle>
               <CardDescription className="text-xs leading-relaxed">
-                Tour sẽ chuyển sang trạng thái <strong>INACTIVE (Ngừng hoạt động)</strong>. Thông tin Tour vẫn được bảo toàn trong cơ sở dữ liệu.
+                The tour status will be changed to <strong>INACTIVE</strong>. Tour data will remain preserved in the database and can be reactivated anytime.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center gap-2 pt-4">
@@ -1072,7 +1017,7 @@ export default function AdminToursPage() {
                 onClick={() => setSoftDeletingId(null)}
                 className="text-xs"
               >
-                Hủy bỏ
+                Cancel
               </Button>
               <Button
                 size="sm"
@@ -1081,7 +1026,7 @@ export default function AdminToursPage() {
                 className="text-xs bg-amber-600 text-white hover:bg-amber-700 gap-1.5"
               >
                 {deleting && <Loader2Icon className="size-3.5 animate-spin" />}
-                <span>Chuyển Ngừng hoạt động</span>
+                <span>Set Inactive</span>
               </Button>
             </CardContent>
           </Card>
