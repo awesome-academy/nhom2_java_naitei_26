@@ -8,6 +8,7 @@ import com.sunbooking.domain.tour.entity.TourImage;
 import com.sunbooking.domain.tour.entity.Tour;
 import com.sunbooking.domain.tour.entity.TourStatus;
 import com.sunbooking.global.exception.ResourceNotFoundException;
+import com.sunbooking.domain.booking.entity.Booking;
 import com.sunbooking.domain.booking.repository.BookingRepository;
 import com.sunbooking.domain.tour.repository.CategoryRepository;
 import com.sunbooking.domain.tour.repository.TourRepository;
@@ -78,8 +79,17 @@ public class TourService {
     @Transactional
     public void delete(Long id) {
         Tour tour = findTour(id);
-        tour.setStatus(TourStatus.INACTIVE);
-        tourRepository.save(tour);
+        List<Long> departureIds = tour.getDepartures().stream()
+                .map(TourDeparture::getId)
+                .filter(Objects::nonNull)
+                .toList();
+        if (!departureIds.isEmpty()) {
+            List<Booking> bookings = bookingRepository.findAll((root, query, cb) -> root.get("departure").get("id").in(departureIds));
+            if (!bookings.isEmpty()) {
+                bookingRepository.deleteAll(bookings);
+            }
+        }
+        tourRepository.delete(tour);
     }
 
     private Tour findTour(Long id) {
