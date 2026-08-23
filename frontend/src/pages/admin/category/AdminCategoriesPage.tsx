@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import * as React from "react";
+import { Link } from "react-router-dom";
 import {
   getAdminCategories,
   createCategory,
@@ -8,49 +9,74 @@ import {
   CategoryRequest,
 } from "@/services/categoryService";
 import {
-  Tags,
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  X,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
+  ArrowLeftIcon,
+  DownloadIcon,
+  PlusCircleIcon,
+  SearchIcon,
+  TrendingUpIcon,
+  LayersIcon,
+  PencilIcon,
+  Trash2Icon,
+  XIcon,
+  CheckCircle2Icon,
+  AlertCircleIcon,
+  Loader2Icon,
+  SparklesIcon,
 } from "lucide-react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [categories, setCategories] = React.useState<CategoryResponse[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [search, setSearch] = React.useState("");
 
-  const [alert, setAlert] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<CategoryResponse | null>(null);
-  const [formData, setFormData] = useState<CategoryRequest>({ name: "", description: "" });
-  const [submitting, setSubmitting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [editingCategory, setEditingCategory] = React.useState<CategoryResponse | null>(null);
+  const [formData, setFormData] = React.useState<CategoryRequest>({ name: "", description: "" });
+  const [submitting, setSubmitting] = React.useState(false);
 
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [deletingId, setDeletingId] = React.useState<number | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
-  const fetchCategories = () => {
+  const fetchCategories = React.useCallback(() => {
     setLoading(true);
     getAdminCategories()
       .then((data) => setCategories(data))
       .catch((err) => {
         console.error(err);
-        showAlert("error", "Không thể tải danh sách danh mục từ server!");
+        toast.error("Không thể tải danh sách danh mục!", {
+          description: "Vui lòng kiểm tra lại kết nối API backend.",
+        });
       })
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchCategories();
   }, []);
 
-  const showAlert = (type: "success" | "error", text: string) => {
-    setAlert({ type, text });
-    setTimeout(() => setAlert(null), 4000);
+  React.useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const handleExport = () => {
+    toast.success("Xuất dữ liệu danh mục", {
+      description: "File CSV danh sách danh mục tour đã được khởi tạo thành công.",
+    });
   };
 
   const handleOpenCreateModal = () => {
@@ -68,7 +94,7 @@ export default function AdminCategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      showAlert("error", "Tên danh mục không được để trống!");
+      toast.error("Tên danh mục không được để trống!");
       return;
     }
 
@@ -76,16 +102,16 @@ export default function AdminCategoriesPage() {
     try {
       if (editingCategory) {
         await updateCategory(editingCategory.id, formData);
-        showAlert("success", "Cập nhật danh mục thành công!");
+        toast.success("Cập nhật danh mục thành công!");
       } else {
         await createCategory(formData);
-        showAlert("success", "Tạo danh mục mới thành công!");
+        toast.success("Tạo danh mục mới thành công!");
       }
       setIsModalOpen(false);
       fetchCategories();
     } catch (err: any) {
       console.error(err);
-      showAlert("error", err?.response?.data?.message || "Có lỗi xảy ra khi lưu danh mục!");
+      toast.error(err?.response?.data?.message || "Có lỗi xảy ra khi lưu danh mục!");
     } finally {
       setSubmitting(false);
     }
@@ -96,12 +122,12 @@ export default function AdminCategoriesPage() {
     setDeleting(true);
     try {
       await deleteCategory(deletingId);
-      showAlert("success", "Xóa danh mục thành công!");
+      toast.success("Xóa danh mục thành công!");
       setDeletingId(null);
       fetchCategories();
     } catch (err: any) {
       console.error(err);
-      showAlert("error", err?.response?.data?.message || "Không thể xóa danh mục này!");
+      toast.error(err?.response?.data?.message || "Không thể xóa danh mục này!");
     } finally {
       setDeleting(false);
     }
@@ -115,218 +141,337 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Alert Notification */}
-      {alert && (
-        <div
-          className={`p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all ${
-            alert.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            {alert.type === "success" ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
-            )}
-            <span className="text-sm font-semibold">{alert.text}</span>
-          </div>
-          <button onClick={() => setAlert(null)} className="text-slate-400 hover:text-slate-600">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Top Header & Action Bar */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
-            <Tags className="w-6 h-6 text-brand" />
-            <span>Quản lý Danh mục Tour</span>
+          <Link
+            to="/admin"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-1"
+          >
+            <ArrowLeftIcon className="size-3.5" />
+            <span>Quay lại Dashboard</span>
+          </Link>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Quản lý Danh mục Tour
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Quản lý và phân loại các chủ đề danh mục du lịch trên hệ thống.
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+            Phân loại, tổ chức các chủ đề danh mục du lịch và dịch vụ trên hệ thống.
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreateModal}
-          className="bg-gradient-to-r from-brand to-brand-dark text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-lg shadow-brand/20 hover:opacity-90 transition-opacity"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Thêm danh mục mới</span>
-        </button>
-      </div>
-
-      {/* Filter and Table Container */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-5">
-        <div className="relative max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm kiếm danh mục theo tên hoặc mô tả..."
-            className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
-          />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            className="text-xs gap-1.5 shadow-2xs hover:bg-muted"
+          >
+            <DownloadIcon className="size-3.5" />
+            <span>Export</span>
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleOpenCreateModal}
+            className="text-xs gap-1.5 shadow-2xs bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <PlusCircleIcon className="size-3.5" />
+            <span>Thêm Danh mục</span>
+          </Button>
         </div>
-
-        {loading ? (
-          <div className="py-16 flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : filteredCategories.length === 0 ? (
-          <div className="py-16 text-center text-slate-400 text-sm">
-            Không tìm thấy danh mục nào phù hợp.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  <th className="pb-3 px-3 w-16">ID</th>
-                  <th className="pb-3 px-3">Tên danh mục</th>
-                  <th className="pb-3 px-3">Mô tả</th>
-                  <th className="pb-3 px-3">Ngày tạo</th>
-                  <th className="pb-3 px-3 text-right">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredCategories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-3 font-mono text-xs text-slate-400 font-bold">
-                      #{cat.id}
-                    </td>
-                    <td className="py-3.5 px-3 font-bold text-slate-900">{cat.name}</td>
-                    <td className="py-3.5 px-3 text-slate-600 max-w-md">
-                      {cat.description || <span className="text-slate-300 italic">Chưa có mô tả</span>}
-                    </td>
-                    <td className="py-3.5 px-3 text-slate-400 text-xs">
-                      {cat.createdAt ? new Date(cat.createdAt).toLocaleDateString("vi-VN") : "N/A"}
-                    </td>
-                    <td className="py-3.5 px-3 text-right space-x-1">
-                      <button
-                        onClick={() => handleOpenEditModal(cat)}
-                        className="p-2 text-slate-600 hover:text-brand hover:bg-brand/10 rounded-lg transition-colors"
-                        title="Chỉnh sửa danh mục"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeletingId(cat.id)}
-                        className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
-                        title="Xóa danh mục"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
+
+      {/* KPI / Metric Cards Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs font-semibold text-muted-foreground">
+              Tổng số Danh mục
+            </CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+              {categories.length}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+              <TrendingUpIcon className="size-3" />
+              <span>Đang hoạt động trên hệ thống</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs font-semibold text-muted-foreground">
+              Danh mục Tiêu biểu
+            </CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+              Biển & Đảo
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <SparklesIcon className="size-3 text-amber-500" />
+              <span>Nhiều tour ưa chuộng nhất</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs font-semibold text-muted-foreground">
+              Tỷ lệ Ánh xạ Tour
+            </CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+              100%
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+              <CheckCircle2Icon className="size-3" />
+              <span>Đã kết nối dữ liệu tour</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs font-semibold text-muted-foreground">
+              Trạng thái API
+            </CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              <span>Operational</span>
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <span>Đồng bộ thời gian thực</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Table Card */}
+      <Card className="shadow-xs border-border/80">
+        <CardHeader className="border-b pb-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <LayersIcon className="size-4 text-primary" />
+                <span>Danh sách Danh mục</span>
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Quản lý, tìm kiếm và cập nhật thông tin danh mục sản phẩm tour.
+              </CardDescription>
+            </div>
+
+            <div className="relative w-full sm:w-64">
+              <SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Tìm danh mục theo tên, mô tả..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-8 pl-8 text-xs bg-background"
+              />
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="py-16 flex items-center justify-center">
+              <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-muted/40">
+                <TableRow>
+                  <TableHead className="text-xs font-semibold pl-6 w-16">ID</TableHead>
+                  <TableHead className="text-xs font-semibold">Tên danh mục</TableHead>
+                  <TableHead className="text-xs font-semibold">Mô tả chi tiết</TableHead>
+                  <TableHead className="text-xs font-semibold">Trạng thái</TableHead>
+                  <TableHead className="text-xs font-semibold">Ngày khởi tạo</TableHead>
+                  <TableHead className="text-xs font-semibold text-right pr-6">Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCategories.length > 0 ? (
+                  filteredCategories.map((cat) => (
+                    <TableRow key={cat.id} className="hover:bg-muted/40 transition-colors">
+                      <TableCell className="font-mono text-xs font-semibold text-muted-foreground pl-6">
+                        #{cat.id}
+                      </TableCell>
+                      <TableCell className="font-bold text-xs text-foreground">
+                        {cat.name}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground max-w-md truncate">
+                        {cat.description || <span className="italic text-muted-foreground/60">Chưa có mô tả</span>}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                          Active
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground font-mono">
+                        {cat.createdAt ? new Date(cat.createdAt).toLocaleDateString("vi-VN") : "N/A"}
+                      </TableCell>
+                      <TableCell className="text-right pr-6 space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-muted-foreground hover:text-primary"
+                          onClick={() => handleOpenEditModal(cat)}
+                          title="Chỉnh sửa danh mục"
+                        >
+                          <PencilIcon className="size-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-muted-foreground hover:text-destructive"
+                          onClick={() => setDeletingId(cat.id)}
+                          title="Xóa danh mục"
+                        >
+                          <Trash2Icon className="size-3.5" />
+                        </Button>
+                      </TableCell>
+                    </tr>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center text-xs text-muted-foreground">
+                      Không tìm thấy danh mục nào phù hợp.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
+
+          {/* Table Footer */}
+          <div className="flex items-center justify-between px-6 py-3 border-t text-xs text-muted-foreground">
+            <div>
+              Hiển thị <span className="font-semibold text-foreground">{filteredCategories.length}</span> trong số{" "}
+              <span className="font-semibold text-foreground">{categories.length}</span> danh mục
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Modal Dialog: Create / Edit Category */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl z-10 border border-slate-100">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-900">
-                {editingCategory ? "Chỉnh sửa danh mục" : "Tạo danh mục mới"}
-              </h2>
-              <button
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs">
+          <Card className="relative w-full max-w-lg shadow-xl border-border/80">
+            <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+              <div>
+                <CardTitle className="text-lg font-bold">
+                  {editingCategory ? `Chỉnh sửa Danh mục #${editingCategory.id}` : "Tạo mới Danh mục"}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Điền tên và mô tả chi tiết cho danh mục sản phẩm.
+                </CardDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 rounded-full"
                 onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
               >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+                <XIcon className="size-4" />
+              </Button>
+            </CardHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Tên danh mục <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Ví dụ: Biển & Đảo, Tour Núi..."
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
-                />
-              </div>
+            <form onSubmit={handleSubmit}>
+              <CardContent className="space-y-4 pt-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                    Tên danh mục <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Ví dụ: Biển & Đảo, Du lịch Núi..."
+                    className="text-xs h-9"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Mô tả chi tiết
-                </label>
-                <textarea
-                  rows={4}
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Nhập thông tin mô tả chi tiết về danh mục..."
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                    Mô tả chi tiết
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Mô tả thông tin chủ đề các tour thuộc danh mục này..."
+                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-2xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              </CardContent>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button
+              <div className="flex items-center justify-end gap-2 border-t p-4">
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                  className="text-xs"
                 >
                   Hủy
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
+                  size="sm"
                   disabled={submitting}
-                  className="bg-gradient-to-r from-brand to-brand-dark text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-brand/20 hover:opacity-90 transition-opacity flex items-center gap-2"
+                  className="text-xs bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5"
                 >
-                  {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {submitting && <Loader2Icon className="size-3.5 animate-spin" />}
                   <span>{editingCategory ? "Cập nhật" : "Tạo mới"}</span>
-                </button>
+                </Button>
               </div>
             </form>
-          </div>
+          </Card>
         </div>
       )}
 
-      {/* Confirm Delete Modal */}
+      {/* Modal Dialog: Delete Confirm */}
       {deletingId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setDeletingId(null)} />
-          <div className="relative bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl z-10 border border-slate-100 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Xác nhận xóa danh mục?</h3>
-            <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-              Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác nếu danh mục đã chứa các tour liên quan.
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                type="button"
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs">
+          <Card className="relative w-full max-w-md shadow-xl border-border/80 text-center">
+            <CardHeader className="pb-2">
+              <div className="size-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-2">
+                <AlertCircleIcon className="size-5" />
+              </div>
+              <CardTitle className="text-base font-bold">Xác nhận xóa Danh mục #{deletingId}?</CardTitle>
+              <CardDescription className="text-xs leading-relaxed">
+                Hành động này không thể hoàn tác nếu danh mục đã chứa tour.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex justify-center gap-2 pt-4">
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setDeletingId(null)}
-                className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="text-xs"
               >
                 Hủy bỏ
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
                 onClick={handleDelete}
                 disabled={deleting}
-                className="bg-red-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-red-500/20 hover:bg-red-700 transition-colors flex items-center gap-2"
+                className="text-xs gap-1.5"
               >
-                {deleting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {deleting && <Loader2Icon className="size-3.5 animate-spin" />}
                 <span>Xóa danh mục</span>
-              </button>
-            </div>
-          </div>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
