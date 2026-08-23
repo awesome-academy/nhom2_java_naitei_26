@@ -12,6 +12,11 @@ type CommentItemProps = {
   onChanged: () => void
 }
 
+function formatCommentDate(value: string): string {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? 'Unknown time' : date.toLocaleString()
+}
+
 function CommentItem({ comment, reviewId, onChanged }: CommentItemProps) {
   const [replying, setReplying] = useState(false)
 
@@ -20,7 +25,7 @@ function CommentItem({ comment, reviewId, onChanged }: CommentItemProps) {
       <article>
         <header>
           <strong>{comment.userName || 'User'}</strong>
-          <small>{new Date(comment.createdAt).toLocaleString()}</small>
+          <small>{formatCommentDate(comment.createdAt)}</small>
         </header>
 
         <p>{comment.content}</p>
@@ -80,18 +85,22 @@ export default function CommentThread({ reviewId }: CommentThreadProps) {
     void loadComments()
   }, [loadComments])
 
+  const handleCommentsChanged = useCallback(() => {
+    void loadComments()
+  }, [loadComments])
+
   return (
     <section aria-label="Comments">
       <h4>Comments</h4>
 
-      <ReplyInput reviewId={reviewId} onSubmitted={() => void loadComments()} />
+      <ReplyInput reviewId={reviewId} onSubmitted={handleCommentsChanged} />
 
       {loading && <p>Loading comments...</p>}
 
       {error && (
         <div role="alert">
           <p>{error}</p>
-          <button type="button" onClick={() => void loadComments()}>
+          <button type="button" onClick={handleCommentsChanged}>
             Try again
           </button>
         </div>
@@ -106,7 +115,7 @@ export default function CommentThread({ reviewId }: CommentThreadProps) {
               key={comment.id}
               comment={comment}
               reviewId={reviewId}
-              onChanged={() => void loadComments()}
+              onChanged={handleCommentsChanged}
             />
           ))}
         </ul>

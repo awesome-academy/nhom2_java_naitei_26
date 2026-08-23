@@ -18,23 +18,17 @@ export type CreateCommentRequest = {
   parentCommentId?: number | null
 }
 
-function getErrorMessage(error: unknown, fallback: string): string {
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error &&
-    typeof error.response === 'object' &&
-    error.response !== null &&
-    'data' in error.response &&
-    typeof error.response.data === 'object' &&
-    error.response.data !== null &&
-    'message' in error.response.data &&
-    typeof error.response.data.message === 'string'
-  ) {
-    return error.response.data.message
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string
+    }
   }
+}
 
-  return error instanceof Error ? error.message : fallback
+function getErrorMessage(error: unknown, fallback: string): string {
+  const apiMessage = (error as ApiError)?.response?.data?.message
+  return apiMessage || (error instanceof Error ? error.message : fallback)
 }
 
 export async function getComments(reviewId: number): Promise<Comment[]> {
