@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  Archive,
 } from "lucide-react";
 
 export default function AdminToursPage() {
@@ -52,8 +53,8 @@ export default function AdminToursPage() {
   // View Detail Modal
   const [previewTour, setPreviewTour] = useState<BackendTourResponse | null>(null);
 
-  // Delete Confirm Modal
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  // Soft Delete Confirm Modal
+  const [softDeletingId, setSoftDeletingId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   // Create / Edit Modal State
@@ -237,17 +238,17 @@ export default function AdminToursPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deletingId) return;
+  const handleSoftDelete = async () => {
+    if (!softDeletingId) return;
     setDeleting(true);
     try {
-      await deleteAdminTour(deletingId);
-      showAlert("success", "Xóa Tour thành công!");
-      setDeletingId(null);
+      await deleteAdminTour(softDeletingId);
+      showAlert("success", `Đã chuyển Tour #${softDeletingId} sang trạng thái Ngừng hoạt động (Xóa mềm)!`);
+      setSoftDeletingId(null);
       fetchTours();
     } catch (err: any) {
       console.error(err);
-      showAlert("error", err?.response?.data?.message || "Không thể xóa Tour này!");
+      showAlert("error", err?.response?.data?.message || "Không thể thực hiện xóa mềm Tour này!");
     } finally {
       setDeleting(false);
     }
@@ -473,6 +474,13 @@ export default function AdminToursPage() {
                           title="Chỉnh sửa tour"
                         >
                           <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setSoftDeletingId(tour.id)}
+                          className="p-2 text-slate-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                          title="Xóa mềm (Ngừng hoạt động)"
+                        >
+                          <Archive className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>
@@ -984,6 +992,39 @@ export default function AdminToursPage() {
         </div>
       )}
 
+      {/* Soft Delete Confirm Modal */}
+      {softDeletingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setSoftDeletingId(null)} />
+          <div className="relative bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl z-10 border border-slate-100 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4">
+              <Archive className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Xác nhận xóa mềm Tour #{softDeletingId}?</h3>
+            <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+              Tour sẽ chuyển sang trạng thái <strong>INACTIVE (Ngừng hoạt động)</strong>. Thông tin Tour vẫn được lưu giữ trong cơ sở dữ liệu và bạn có thể khôi phục lại bất kỳ lúc nào.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setSoftDeletingId(null)}
+                className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={handleSoftDelete}
+                disabled={deleting}
+                className="bg-amber-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 hover:bg-amber-700 transition-colors flex items-center gap-2"
+              >
+                {deleting && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>Chuyển Ngừng hoạt động</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
