@@ -161,31 +161,6 @@ export default function AdminCategoriesPage() {
         </div>
       </div>
 
-      {/* Metric Cards Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Total Categories
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              {categories.length}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-
-        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Active Category Status
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              Operational
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-
       {/* Main Table Card */}
       <Card className="shadow-xs border-border/80">
         <CardHeader className="border-b pb-4">
@@ -221,36 +196,36 @@ export default function AdminCategoriesPage() {
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="text-xs font-semibold pl-6 w-16">ID</TableHead>
-                  <TableHead className="text-xs font-semibold">Category Name</TableHead>
-                  <TableHead className="text-xs font-semibold">Description</TableHead>
-                  <TableHead className="text-xs font-semibold">Status</TableHead>
-                  <TableHead className="text-xs font-semibold">Created At</TableHead>
-                  <TableHead className="text-xs font-semibold text-right pr-6">Actions</TableHead>
+                  <TableHead className="text-xs font-semibold text-center w-16">ID</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Category Name</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Description</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Status</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Created At</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredCategories.length > 0 ? (
                   filteredCategories.map((cat) => (
                     <TableRow key={cat.id} className="hover:bg-muted/40 transition-colors">
-                      <TableCell className="font-mono text-xs font-semibold text-muted-foreground pl-6">
+                      <TableCell className="font-mono text-xs font-semibold text-muted-foreground text-center">
                         #{cat.id}
                       </TableCell>
-                      <TableCell className="font-bold text-xs text-foreground">
+                      <TableCell className="font-bold text-xs text-foreground text-center">
                         {cat.name}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground max-w-md truncate">
+                      <TableCell className="text-xs text-muted-foreground max-w-md truncate text-center">
                         {cat.description || <span className="italic text-muted-foreground/60">No description available</span>}
                       </TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-xs text-center">
                         <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">
                           Active
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground font-mono">
+                      <TableCell className="text-xs text-muted-foreground font-mono text-center">
                         {cat.createdAt ? new Date(cat.createdAt).toLocaleDateString("en-US") : "N/A"}
                       </TableCell>
-                      <TableCell className="text-right pr-6 space-x-1">
+                      <TableCell className="text-center space-x-1">
                         <Button
                           variant="ghost"
                           size="icon"

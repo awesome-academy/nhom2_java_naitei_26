@@ -306,15 +306,6 @@ export default function AdminToursPage() {
     setFormData({ ...formData, departures: newDeps });
   };
 
-  const publishedToursCount = toursData.content.filter(
-    (t) => String(t.status).toUpperCase() === "PUBLISHED" || String(t.status).toUpperCase() === "AVAILABLE"
-  ).length;
-
-  const totalDeparturesCount = toursData.content.reduce(
-    (acc, t) => acc + (t.departures?.length || 0),
-    0
-  );
-
   return (
     <div className="space-y-6">
       {/* Top Header & Action Bar */}
@@ -345,42 +336,6 @@ export default function AdminToursPage() {
             <span>Create Tour</span>
           </Button>
         </div>
-      </div>
-
-      {/* Metric Cards Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Total Tours
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              {toursData.totalElements}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-
-        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Published Tours
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              {publishedToursCount}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-
-        <Card className="shadow-xs border-border/80 transition-all hover:shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Scheduled Departures
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-              {totalDeparturesCount}
-            </CardTitle>
-          </CardHeader>
-        </Card>
       </div>
 
       {/* Main Table Card */}
@@ -443,15 +398,15 @@ export default function AdminToursPage() {
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="text-xs font-semibold pl-6 w-16">ID</TableHead>
-                  <TableHead className="text-xs font-semibold">Tour</TableHead>
-                  <TableHead className="text-xs font-semibold">Duration</TableHead>
-                  <TableHead className="text-xs font-semibold">Category</TableHead>
-                  <TableHead className="text-xs font-semibold">Route</TableHead>
-                  <TableHead className="text-xs font-semibold">Base Price</TableHead>
-                  <TableHead className="text-xs font-semibold">Departures</TableHead>
-                  <TableHead className="text-xs font-semibold">Status</TableHead>
-                  <TableHead className="text-xs font-semibold text-right pr-6">Actions</TableHead>
+                  <TableHead className="text-xs font-semibold text-center w-16">ID</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Tour</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Duration</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Category</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Route</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Base Price</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Departures</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Status</TableHead>
+                  <TableHead className="text-xs font-semibold text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -462,11 +417,11 @@ export default function AdminToursPage() {
 
                     return (
                       <TableRow key={tour.id} className="hover:bg-muted/40 transition-colors">
-                        <TableCell className="font-mono text-xs font-semibold text-muted-foreground pl-6">
+                        <TableCell className="font-mono text-xs font-semibold text-muted-foreground text-center">
                           #{tour.id}
                         </TableCell>
-                        <TableCell className="font-bold text-xs text-foreground max-w-[200px]">
-                          <div className="flex items-center gap-3">
+                        <TableCell className="font-bold text-xs text-foreground max-w-[200px] text-center">
+                          <div className="flex items-center justify-center gap-3">
                             <img
                               src={
                                 tour.images?.[0]?.imageUrl ||
@@ -476,28 +431,28 @@ export default function AdminToursPage() {
                               alt={tour.name}
                               className="size-10 rounded-lg object-cover bg-muted shrink-0 border border-border"
                             />
-                            <div className="min-w-0 font-bold text-foreground truncate">{tour.name}</div>
+                            <div className="min-w-0 font-bold text-foreground truncate text-left">{tour.name}</div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground font-medium">
+                        <TableCell className="text-xs text-muted-foreground font-medium text-center">
                           {tour.duration || "N/A"}
                         </TableCell>
-                        <TableCell className="text-xs font-semibold text-muted-foreground">
+                        <TableCell className="text-xs font-semibold text-muted-foreground text-center">
                           {tour.category?.name || "N/A"}
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="text-xs text-muted-foreground text-center">
                           <strong className="text-foreground">{tour.departure || "N/A"}</strong> ➔ {tour.destination || "N/A"}
                         </TableCell>
-                        <TableCell className="text-xs font-bold text-primary font-mono">
+                        <TableCell className="text-xs font-bold text-primary font-mono text-center">
                           {formatPrice(tour.basePrice)}
                         </TableCell>
-                        <TableCell className="text-xs">
+                        <TableCell className="text-xs text-center">
                           <Badge variant="outline" className="gap-1 font-semibold">
                             <CalendarIcon className="size-3 text-muted-foreground" />
                             {tour.departures?.length || 0} dates
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-xs">
+                        <TableCell className="text-xs text-center">
                           {isAvailable ? (
                             <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">
                               PUBLISHED
@@ -516,7 +471,7 @@ export default function AdminToursPage() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-right pr-6 space-x-1">
+                        <TableCell className="text-center space-x-1">
                           <Button
                             variant="ghost"
                             size="icon"
