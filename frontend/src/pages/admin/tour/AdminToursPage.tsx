@@ -23,7 +23,6 @@ import {
   ArchiveIcon,
   XIcon,
   CheckCircle2Icon,
-  AlertCircleIcon,
   Loader2Icon,
   EyeIcon,
   CalendarIcon,
@@ -99,7 +98,7 @@ export default function AdminToursPage() {
   }>({
     name: "",
     description: "",
-    basePrice: 1000000,
+ basePrice: 1000000,
     departure: "Hà Nội",
     destination: "",
     duration: "3 Ngày 2 Đêm",

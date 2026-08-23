@@ -79,17 +79,8 @@ public class TourService {
     @Transactional
     public void delete(Long id) {
         Tour tour = findTour(id);
-        List<Long> departureIds = tour.getDepartures().stream()
-                .map(TourDeparture::getId)
-                .filter(Objects::nonNull)
-                .toList();
-        if (!departureIds.isEmpty()) {
-            List<Booking> bookings = bookingRepository.findAll((root, query, cb) -> root.get("departure").get("id").in(departureIds));
-            if (!bookings.isEmpty()) {
-                bookingRepository.deleteAll(bookings);
-            }
-        }
-        tourRepository.delete(tour);
+        tour.setStatus(TourStatus.INACTIVE);
+        tourRepository.save(tour);
     }
 
     private Tour findTour(Long id) {
