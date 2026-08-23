@@ -6,25 +6,30 @@ const PaymentCountdown = ({ expiredAt, onExpire }: Props) => {
     const [timeLeft, setTimeLeft] = useState<number>(0);
 
     useEffect(() => {
+        // Return true if expired, false otherwise
         const calculate = () => {
             const diff = Math.floor((new Date(expiredAt).getTime() - Date.now()) / 1000);
             if (diff <= 0) {
-                //Clear interval immediately when time is up
                 setTimeLeft(0);
                 onExpire();
-                return true; // Signal to stop
+                return true;
             }
             setTimeLeft(diff);
             return false;
         };
 
-        const timer = setInterval(() => {
-            const isDone = calculate();
-            if (isDone) clearInterval(timer);
-        }, 1000);
+        // 1. Initial check on mount
+        const isAlreadyExpired = calculate();
 
-        calculate();
-        return () => clearInterval(timer);
+        // 2. Only start interval if NOT expired yet
+        if (!isAlreadyExpired) {
+            const timer = setInterval(() => {
+                const done = calculate();
+                if (done) clearInterval(timer);
+            }, 1000);
+
+            return () => clearInterval(timer);
+        }
     }, [expiredAt, onExpire]);
 
     const format = (s: number) => {
