@@ -2,7 +2,6 @@ import { useState } from "react";
 import { User } from "@/features/auth/schemas/auth";
 import { useAuthStore } from "@/features/auth/store/authStore";
 import { userService } from "../services/userService";
-import { AvatarSelector } from "./AvatarSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,8 +16,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const updateUser = useAuthStore((state) => state.updateUser);
   const [fullName, setFullName] = useState(user.fullName || "");
   const [phone, setPhone] = useState(user.phone || "");
-  const [avatar, setAvatar] = useState(user.avatar || "");
-  
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ fullName?: string; phone?: string }>({});
 
@@ -47,7 +45,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       const updatedUser = await userService.updateProfile({
         fullName: fullName.trim(),
         phone: phone.trim() || undefined,
-        avatar: avatar.trim() || undefined,
+        avatar: user.avatar || undefined,
       });
 
       // Update authStore
@@ -63,10 +61,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Avatar Section */}
-      <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-6">
-        <AvatarSelector avatar={avatar} onChange={setAvatar} name={fullName || user.username} />
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Username (Readonly) */}

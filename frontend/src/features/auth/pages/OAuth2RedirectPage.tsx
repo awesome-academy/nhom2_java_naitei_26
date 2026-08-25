@@ -22,7 +22,7 @@ export default function OAuth2RedirectPage() {
 
       checkSession()
         .then(() => {
-          toast.success("Đăng nhập thành công!");
+          toast.success("Đăng nhập thành công!", { duration: 1500 });
           navigate("/", { replace: true });
         })
         .catch(() => {

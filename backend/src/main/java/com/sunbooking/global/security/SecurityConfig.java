@@ -19,6 +19,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+
 import com.sunbooking.global.security.oauth2.CustomOAuth2UserService;
 import com.sunbooking.global.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.sunbooking.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -57,9 +61,20 @@ public class SecurityConfig {
                 return authenticationConfiguration.getAuthenticationManager();
         }
 
+        private OAuth2AuthorizationRequestResolver authorizationRequestResolver(
+                        ClientRegistrationRepository clientRegistrationRepository) {
+                DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver =
+                                new DefaultOAuth2AuthorizationRequestResolver(
+                                                clientRegistrationRepository, "/oauth2/authorization");
+                authorizationRequestResolver.setAuthorizationRequestCustomizer(
+                                customizer -> customizer.additionalParameters(params -> params.put("prompt", "select_account")));
+                return authorizationRequestResolver;
+        }
+
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                        JwtAuthenticationFilter jwtAuthenticationFilter)
+                        JwtAuthenticationFilter jwtAuthenticationFilter,
+                        ClientRegistrationRepository clientRegistrationRepository)
                         throws Exception {
                 http
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -83,6 +98,7 @@ public class SecurityConfig {
                                 .oauth2Login(oauth2 -> oauth2
                                                 .authorizationEndpoint(authorization -> authorization
                                                                 .baseUri("/oauth2/authorization")
+                                                                .authorizationRequestResolver(authorizationRequestResolver(clientRegistrationRepository))
                                                                 .authorizationRequestRepository(
                                                                                 httpCookieOAuth2AuthorizationRequestRepository))
                                                 .redirectionEndpoint(redirection -> redirection
