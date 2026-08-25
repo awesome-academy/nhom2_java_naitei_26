@@ -258,8 +258,56 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
       return;
     }
 
+    const todayStr = new Date().toISOString().slice(0, 10);
     const startDateIso = formatDateInput(formData.startDate);
     const endDateIso = formatDateInput(formData.endDate);
+
+    if (startDateIso < todayStr) {
+      toast.error("Start Date must be from today onwards!");
+      return;
+    }
+    if (endDateIso < startDateIso) {
+      toast.error("End Date must be on or after Start Date!");
+      return;
+    }
+    if (Number(formData.basePrice) < 0) {
+      toast.error("Base price cannot be negative!");
+      return;
+    }
+
+    for (let i = 0; i < formData.departures.length; i++) {
+      const dep = formData.departures[i];
+      const depDate = formatDateInput(dep.departureDate);
+      const retDate = formatDateInput(dep.returnDate || dep.departureDate);
+      const totalSlot = Number(dep.totalSlot);
+      const availableSlot = Number(dep.availableSlot);
+      const price = Number(dep.price);
+
+      if (depDate < todayStr) {
+        toast.error(`Departure #${i + 1}: Departure Date must be from today onwards!`);
+        return;
+      }
+      if (retDate < depDate) {
+        toast.error(`Departure #${i + 1}: Return Date must be on or after Departure Date!`);
+        return;
+      }
+      if (totalSlot <= 0) {
+        toast.error(`Departure #${i + 1}: Total Slots must be greater than 0!`);
+        return;
+      }
+      if (availableSlot < 0) {
+        toast.error(`Departure #${i + 1}: Available Slots cannot be negative!`);
+        return;
+      }
+      if (availableSlot > totalSlot) {
+        toast.error(`Departure #${i + 1}: Available Slots cannot exceed Total Slots!`);
+        return;
+      }
+      if (price < 0) {
+        toast.error(`Departure #${i + 1}: Price cannot be negative!`);
+        return;
+      }
+    }
 
     const payload: TourRequest = {
       name: formData.name.trim(),
@@ -763,10 +811,11 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        Start Date
+                        Start Date <span className="text-destructive">*</span>
                       </label>
                       <Input
                         type="date"
+                        min={new Date().toISOString().slice(0, 10)}
                         value={formData.startDate.slice(0, 10)}
                         onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                         className="text-xs h-9"
@@ -775,10 +824,11 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                        End Date
+                        End Date <span className="text-destructive">*</span>
                       </label>
                       <Input
                         type="date"
+                        min={formData.startDate ? formData.startDate.slice(0, 10) : new Date().toISOString().slice(0, 10)}
                         value={formData.endDate.slice(0, 10)}
                         onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                         className="text-xs h-9"
@@ -872,6 +922,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Departure</label>
                           <Input
                             type="date"
+                            min={new Date().toISOString().slice(0, 10)}
                             value={dep.departureDate}
                             onChange={(e) => updateDepartureField(idx, "departureDate", e.target.value)}
                             className="text-xs h-8 bg-background"
@@ -881,6 +932,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Return Date</label>
                           <Input
                             type="date"
+                            min={dep.departureDate.slice(0, 10)}
                             value={dep.returnDate}
                             onChange={(e) => updateDepartureField(idx, "returnDate", e.target.value)}
                             className="text-xs h-8 bg-background"
@@ -890,6 +942,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Price (VND)</label>
                           <Input
                             type="number"
+                            min={0}
                             value={dep.price}
                             onChange={(e) => updateDepartureField(idx, "price", Number(e.target.value))}
                             className="text-xs h-8 bg-background font-mono font-bold text-primary"
@@ -899,6 +952,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Total Slots</label>
                           <Input
                             type="number"
+                            min={1}
                             value={dep.totalSlot}
                             onChange={(e) => updateDepartureField(idx, "totalSlot", Number(e.target.value))}
                             className="text-xs h-8 bg-background"
@@ -908,6 +962,8 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Available</label>
                           <Input
                             type="number"
+                            min={0}
+                            max={dep.totalSlot}
                             value={dep.availableSlot}
                             onChange={(e) => updateDepartureField(idx, "availableSlot", Number(e.target.value))}
                             className="text-xs h-8 bg-background"
