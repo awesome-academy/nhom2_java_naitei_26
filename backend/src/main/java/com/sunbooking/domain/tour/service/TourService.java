@@ -41,7 +41,7 @@ public class TourService {
     @Transactional(readOnly = true)
     public List<TourResponse> search(String keyword, Long categoryId) {
         String normalizedKeyword = normalizeKeyword(keyword);
-        return tourRepository.search(normalizedKeyword, categoryId).stream()
+        return tourRepository.searchPublished(normalizedKeyword, categoryId).stream()
                 .map(TourResponse::from)
                 .toList();
     }
