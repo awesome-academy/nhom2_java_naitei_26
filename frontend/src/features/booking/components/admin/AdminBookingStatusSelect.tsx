@@ -35,13 +35,17 @@ export function AdminBookingStatusSelect({
   const handleCancelBooking = async () => {
     try {
       setIsLoading(true);
-      await adminBookingService.updateAdminBookingStatus(bookingId, "CANCELLED");
+      await adminBookingService.updateAdminBookingStatus(
+        bookingId,
+        "CANCELLED",
+      );
       setStatus("CANCELLED");
       onStatusChange?.("CANCELLED");
-      toast.success("Đã hủy booking thành công!");
-    } catch (error) {
-      console.error("Lỗi khi hủy booking:", error);
-      toast.error("Hủy booking thất bại. Vui lòng thử lại!");
+      toast.success("Booking cancelled successfully!");
+    } catch (error: any) {
+      console.error("Error cancelling booking:", error);
+      const backendMessage = error.response?.data?.message || error.response?.data?.error || "Failed to cancel booking. Please try again!";
+      toast.error(backendMessage);
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +57,7 @@ export function AdminBookingStatusSelect({
         <AlertDialog>
           <AlertDialogTrigger 
             disabled={isLoading}
-            title="Hủy Booking"
+            title="Cancel Booking"
             className="p-1 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
           >
             {isLoading ? (
@@ -64,18 +68,18 @@ export function AdminBookingStatusSelect({
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Xác nhận hủy đặt chỗ</AlertDialogTitle>
+              <AlertDialogTitle>Confirm Booking Cancellation</AlertDialogTitle>
               <AlertDialogDescription>
-                Bạn có chắc chắn muốn hủy đặt chỗ này không? Thao tác này không thể hoàn tác.
+                Are you sure you want to cancel this booking? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Quay lại</AlertDialogCancel>
+              <AlertDialogCancel>Go Back</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleCancelBooking}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
-                Hủy đặt chỗ
+                Cancel Booking
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

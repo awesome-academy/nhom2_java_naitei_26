@@ -7,10 +7,10 @@ interface BookingStatusBadgeProps {
 }
 
 const statusConfig: Record<BookingStatus, { label: string; className: string }> = {
-  PENDING_PAYMENT: { label: "Chờ thanh toán", className: "bg-yellow-100 text-yellow-800 border-yellow-200" },
-  CONFIRMED: { label: "Đã xác nhận", className: "bg-blue-100 text-blue-800 border-blue-200" },
-  CANCELLED: { label: "Đã hủy", className: "bg-red-100 text-red-800 border-red-200" },
-  EXPIRED: { label: "Hết hạn", className: "bg-slate-100 text-slate-800 border-slate-200" },
+  PENDING_PAYMENT: { label: "Pending Payment", className: "bg-yellow-100 text-yellow-800 border-yellow-200" },
+  CONFIRMED: { label: "Confirmed", className: "bg-blue-100 text-blue-800 border-blue-200" },
+  CANCELLED: { label: "Cancelled", className: "bg-red-100 text-red-800 border-red-200" },
+  EXPIRED: { label: "Expired", className: "bg-slate-100 text-slate-800 border-slate-200" },
 };
 
 export function BookingStatusBadge({ status, className }: BookingStatusBadgeProps) {

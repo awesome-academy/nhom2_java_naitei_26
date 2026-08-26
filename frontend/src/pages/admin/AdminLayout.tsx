@@ -13,7 +13,7 @@ import {
   UsersIcon,
   XIcon,
 } from "lucide-react";
-import { AdminTeamSwitcher } from "./components/AdminTeamSwitcher";
+import { SunIcon } from "@/components/common/icons";
 import { AdminSearch } from "./components/AdminSearch";
 import { AdminUserNav } from "./components/AdminUserNav";
 import { Button } from "@/components/ui/button";
@@ -80,19 +80,19 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-slate-50/60 flex flex-col">
       {/* Top Main Navigation Header */}
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-md">
-        <div className="container-wrapper flex h-16 items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between gap-4">
           <div className="flex items-center gap-3 md:gap-6">
-            <AdminTeamSwitcher />
-            <div className="hidden lg:block h-5 w-px bg-border" />
-            <div className="hidden lg:flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">
-                SUN Booking Tours
+            <Link
+              to="/admin"
+              className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              <div className="w-8 h-8 flex items-center justify-center bg-gradient-to-br from-brand to-brand-dark rounded-lg shadow-sm shrink-0">
+                <SunIcon className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-bold text-foreground tracking-tight leading-none hidden sm:block">
+                SUN <span className="text-brand">Booking</span> Tours
               </span>
-              <span>/</span>
-              <span className="font-medium text-foreground">
-                Management Console
-              </span>
-            </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -100,7 +100,7 @@ export default function AdminLayout() {
 
             <Link
               to="/"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted whitespace-nowrap"
               title="Open customer website"
             >
               <ExternalLinkIcon className="size-3.5" />
@@ -140,7 +140,7 @@ export default function AdminLayout() {
 
         {/* Secondary Sub Navigation Bar (Desktop) */}
         <div className="hidden md:block border-t border-border/40 bg-background/50">
-          <div className="container-wrapper flex h-11 items-center gap-1 overflow-x-auto no-scrollbar">
+          <div className="w-full px-4 sm:px-6 lg:px-8 flex h-11 items-center gap-1 overflow-x-auto no-scrollbar">
             {adminNavItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -235,14 +235,14 @@ export default function AdminLayout() {
 
       {/* Main Content Area */}
       <main className="flex-1 py-6 sm:py-8">
-        <div className="container-wrapper">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <Outlet />
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-border bg-background/50 py-4 text-center text-xs text-muted-foreground">
-        <div className="container-wrapper flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© 2026 SUN Booking Tours. Admin Operations Platform.</p>
           <div className="flex items-center gap-4 text-[11px]">
             <Link to="/admin/revenue" className="hover:underline">
