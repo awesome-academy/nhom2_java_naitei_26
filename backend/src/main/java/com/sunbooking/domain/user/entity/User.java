@@ -26,11 +26,11 @@ public class User extends BaseEntity {
     @Column(name = "avatar")
     private String avatar;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleConverter.class)
     @Column(name = "role")
     private Role role;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = UserStatusConverter.class)
     @Column(name = "status")
     private UserStatus status;
 

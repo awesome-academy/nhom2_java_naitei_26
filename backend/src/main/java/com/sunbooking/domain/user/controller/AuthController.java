@@ -40,10 +40,10 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(true) // Secure in production
+                .secure(false) // Allow HTTP localhost in development
                 .path("/")
-                .maxAge(15 * 60) // 15 minutes
-                .sameSite("Strict")
+                .maxAge(24 * 60 * 60) // 24 hours
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -55,10 +55,10 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

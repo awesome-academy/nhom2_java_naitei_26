@@ -89,27 +89,16 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
                         JwtAuthenticationFilter jwtAuthenticationFilter)
                         throws Exception {
-                org.springframework.security.web.csrf.CookieCsrfTokenRepository tokenRepository = org.springframework.security.web.csrf.CookieCsrfTokenRepository
-                                .withHttpOnlyFalse();
-                org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler delegate = new org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler();
-                // set the name of the attribute the CsrfToken will be populated on
-                delegate.setCsrfRequestAttributeName("_csrf");
-
                 http
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                                .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers("/api/payments/webhook")
-                                                .csrfTokenRepository(tokenRepository)
-                                                .csrfTokenRequestHandler(delegate))
-                                .addFilterAfter(new CsrfCookieFilter(),
-                                                org.springframework.security.web.authentication.www.BasicAuthenticationFilter.class)
+                                .csrf(org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer::disable)
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
                                                 .permitAll()
-                                                .requestMatchers("/api/auth/login", "/api/auth/register", "/oauth2/**",
+                                                .requestMatchers("/api/auth/**", "/oauth2/**",
                                                                 "/login/oauth2/code/**")
                                                 .permitAll()
                                                 // ALLOW SePay Webhook and Payment Status Polling
@@ -143,9 +132,8 @@ public class SecurityConfig {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(allowedOrigins);
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-                configuration.setAllowedHeaders(
-                                List.of("Authorization", "Content-Type", "Cache-Control", "X-XSRF-TOKEN"));
-                configuration.setExposedHeaders(List.of("Authorization", "X-XSRF-TOKEN"));
+                configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "*"));
+                configuration.setExposedHeaders(List.of("Authorization", "*"));
                 configuration.setAllowCredentials(true);
                 configuration.setMaxAge(3600L);
 
