@@ -3,6 +3,9 @@ package com.sunbooking.global.security;
 import com.sunbooking.global.security.oauth2.CustomOAuth2UserService;
 import com.sunbooking.global.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.sunbooking.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,10 +78,8 @@ public class SecurityConfig {
         private OAuth2AuthorizationRequestResolver authorizationRequestResolver() {
                 DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
                                 clientRegistrationRepository, "/oauth2/authorization");
-
                 resolver.setAuthorizationRequestCustomizer(customizer -> customizer
                                 .additionalParameters(params -> params.put("prompt", "select_account")));
-
                 return resolver;
         }
 
@@ -101,11 +102,11 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/auth/**", "/oauth2/**",
                                                                 "/login/oauth2/code/**")
                                                 .permitAll()
-                                                // ALLOW SePay Webhook and Payment Status Polling
-                                                .requestMatchers("/api/payments/webhook", "/api/payments/**")
-                                                .permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/reviews/**",
-                                                                "/api/tours/**", "/api/categories/**")
+
+                                                .requestMatchers("/api/payments", "/api/payments/**").permitAll()
+
+                                                .requestMatchers(HttpMethod.GET, "/api/reviews/**", "/api/tours/**",
+                                                                "/api/categories/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
