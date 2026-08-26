@@ -113,7 +113,10 @@ export default function AdminDashboardPage() {
       ])
 
       if (revenueRes.status === "fulfilled" && revenueRes.value) {
-        setRevenueStats(revenueRes.value)
+        setRevenueStats({
+          totalRevenue: Number(revenueRes.value.totalRevenue) || 0,
+          chartData: Array.isArray(revenueRes.value.chartData) ? revenueRes.value.chartData : [],
+        })
       }
       if (bookingStatsRes.status === "fulfilled" && bookingStatsRes.value) {
         setBookingStats(bookingStatsRes.value)
@@ -129,10 +132,26 @@ export default function AdminDashboardPage() {
         setTopTours(toursRes.value.content || [])
       }
       if (categoriesRes.status === "fulfilled" && categoriesRes.value) {
-        setCategories(categoriesRes.value)
+        const val = categoriesRes.value
+        if (Array.isArray(val)) {
+          setCategories(val)
+        } else if (Array.isArray((val as any)?.content)) {
+          setCategories((val as any).content)
+        } else if (Array.isArray((val as any)?.data)) {
+          setCategories((val as any).data)
+        } else {
+          setCategories([])
+        }
       }
       if (reviewsRes.status === "fulfilled" && reviewsRes.value) {
-        setReviewCount(reviewsRes.value.length || 0)
+        const rVal = reviewsRes.value
+        if (Array.isArray(rVal)) {
+          setReviewCount(rVal.length)
+        } else if (Array.isArray((rVal as any)?.content)) {
+          setReviewCount((rVal as any).content.length)
+        } else {
+          setReviewCount(0)
+        }
       }
     } catch {
       // Handled silently with fallback states
@@ -195,7 +214,7 @@ export default function AdminDashboardPage() {
       description: "Destinations, tags & collections",
       to: "/admin/categories",
       icon: LayersIcon,
-      count: `${categories.length} Categories`,
+      count: `${Array.isArray(categories) ? categories.length : 0} Categories`,
       color: "text-purple-600 bg-purple-50 border-purple-200",
     },
   ]
@@ -316,7 +335,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <LayersIcon className="size-3.5 text-purple-600" />
-                  <span>Across {categories.length} active categories</span>
+                  <span>Across {Array.isArray(categories) ? categories.length : 0} active categories</span>
                 </div>
               </CardContent>
             </Card>
@@ -358,7 +377,7 @@ export default function AdminDashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <OverviewChart data={revenueStats.chartData} />
+                <OverviewChart data={Array.isArray(revenueStats?.chartData) ? revenueStats.chartData : []} />
               </CardContent>
             </Card>
 
@@ -570,13 +589,13 @@ export default function AdminDashboardPage() {
             {/* Categories Overview */}
             <Card className="shadow-xs border-border/80">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Tour Categories ({categories.length})</CardTitle>
+                <CardTitle className="text-base font-semibold">Tour Categories ({Array.isArray(categories) ? categories.length : 0})</CardTitle>
                 <CardDescription className="text-xs">
                   Active classification categories configured in catalog.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {categories.length > 0 ? (
+                {Array.isArray(categories) && categories.length > 0 ? (
                   categories.map((c) => (
                     <div key={c.id} className="flex items-center justify-between p-2.5 rounded-lg border text-xs">
                       <div className="flex items-center gap-2">
@@ -623,7 +642,7 @@ export default function AdminDashboardPage() {
               </Link>
             </CardHeader>
             <CardContent>
-              {revenueStats.chartData && revenueStats.chartData.length > 0 ? (
+              {Array.isArray(revenueStats?.chartData) && revenueStats.chartData.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -642,7 +661,7 @@ export default function AdminDashboardPage() {
                             day: "2-digit",
                           })}
                         </TableCell>
-                        <TableCell className="text-xs font-mono font-bold text-right text-emerald-700">
+                        <TableCell className="text-xs font-semibold text-right font-mono text-emerald-600">
                           {formatVND(d.amount)}
                         </TableCell>
                       </TableRow>
@@ -650,8 +669,8 @@ export default function AdminDashboardPage() {
                   </TableBody>
                 </Table>
               ) : (
-                <div className="py-8 text-center text-xs text-muted-foreground">
-                  No daily revenue transactions recorded in the last 14 days.
+                <div className="py-12 text-center text-xs text-muted-foreground">
+                  No revenue data recorded in the last 14 days.
                 </div>
               )}
             </CardContent>

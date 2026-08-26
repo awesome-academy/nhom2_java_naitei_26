@@ -85,7 +85,7 @@ export default function HeroSection({ categories, departuresList }: HeroSectionP
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[140px] bg-white z-50 p-1">
                 <DropdownMenuItem className="cursor-pointer py-1.5 px-2 text-sm hover:bg-slate-100 rounded-sm" onClick={() => setCategory("Tất cả danh mục")}>Tất cả danh mục</DropdownMenuItem>
-                {categories.map((c) => (
+                {Array.isArray(categories) && categories.map((c) => (
                   <DropdownMenuItem key={c.id} className="cursor-pointer py-1.5 px-2 text-sm hover:bg-slate-100 rounded-sm" onClick={() => setCategory(c.name)}>{c.name}</DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -100,7 +100,7 @@ export default function HeroSection({ categories, departuresList }: HeroSectionP
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[140px] bg-white z-50 p-1">
                 <DropdownMenuItem className="cursor-pointer py-1.5 px-2 text-sm hover:bg-slate-100 rounded-sm" onClick={() => setDeparture("Bất kỳ")}>Bất kỳ</DropdownMenuItem>
-                {departuresList.map((dep) => (
+                {Array.isArray(departuresList) && departuresList.map((dep) => (
                   <DropdownMenuItem key={dep} className="cursor-pointer py-1.5 px-2 text-sm hover:bg-slate-100 rounded-sm" onClick={() => setDeparture(dep)}>{dep}</DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

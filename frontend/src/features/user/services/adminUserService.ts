@@ -64,13 +64,68 @@ export const adminUserService = {
     size?: number;
     sort?: string;
   }): Promise<PageResponse<UserItem>> => {
-    const response = await apiClient.get<PageResponse<UserItem>>("/api/admin/users", { params });
-    return response.data;
+    try {
+      const response = await apiClient.get<any>("/api/admin/users", { params });
+      const data = response?.data;
+      if (Array.isArray(data)) {
+        return {
+          content: data,
+          totalElements: data.length,
+          totalPages: 1,
+          size: data.length,
+          number: 0,
+        };
+      }
+      return {
+        content: Array.isArray(data?.content) ? data.content : [],
+        totalElements: typeof data?.totalElements === "number" ? data.totalElements : (data?.content?.length || 0),
+        totalPages: typeof data?.totalPages === "number" ? data.totalPages : 1,
+        size: typeof data?.size === "number" ? data.size : 10,
+        number: typeof data?.number === "number" ? data.number : 0,
+      };
+    } catch (error) {
+      console.error("Failed to fetch admin users:", error);
+      return {
+        content: [],
+        totalElements: 0,
+        totalPages: 1,
+        size: 10,
+        number: 0,
+      };
+    }
   },
 
   getUserStats: async (): Promise<UserStats> => {
-    const response = await apiClient.get<UserStats>("/api/admin/users/stats");
-    return response.data;
+    try {
+      const response = await apiClient.get<any>("/api/admin/users/stats");
+      const data = response?.data;
+      return {
+        totalUsers: Number(data?.totalUsers) || 0,
+        activeUsers: Number(data?.activeUsers) || 0,
+        inactiveUsers: Number(data?.inactiveUsers) || 0,
+        lockedUsers: Number(data?.lockedUsers) || 0,
+        deletedUsers: Number(data?.deletedUsers) || 0,
+        newThisWeek: Number(data?.newThisWeek) || 0,
+        adminUsers: Number(data?.adminUsers) || 0,
+        regularUsers: Number(data?.regularUsers) || 0,
+        staffUsers: Number(data?.staffUsers) || 0,
+        guideUsers: Number(data?.guideUsers) || 0,
+      };
+    } catch (error) {
+      console.error("Failed to fetch user stats:", error);
+      return {
+        totalUsers: 0,
+        activeUsers: 0,
+        inactiveUsers: 0,
+        lockedUsers: 0,
+        deletedUsers: 0,
+        newThisWeek: 0,
+        adminUsers: 0,
+        regularUsers: 0,
+        staffUsers: 0,
+        guideUsers: 0,
+      };
+    }
   },
 
   getUserById: async (id: number): Promise<UserItem> => {

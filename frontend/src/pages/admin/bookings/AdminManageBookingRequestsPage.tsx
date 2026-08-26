@@ -54,11 +54,12 @@ export default function AdminManageBookingRequestsPage() {
         searchKeyword: debouncedKeyword || undefined,
         status: (statusFilter as BookingStatus) || undefined,
       });
-      setBookings(res.content);
-      setTotalPages(res.totalPages);
-      setTotalElements(res.totalElements);
+      setBookings(Array.isArray(res?.content) ? res.content : []);
+      setTotalPages(typeof res?.totalPages === 'number' ? res.totalPages : 1);
+      setTotalElements(typeof res?.totalElements === 'number' ? res.totalElements : 0);
     } catch (error) {
       console.error("Failed to fetch admin bookings:", error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -258,7 +259,7 @@ export default function AdminManageBookingRequestsPage() {
         </div>
 
         {/* Pagination */}
-        {bookings.length > 0 && (
+        {Array.isArray(bookings) && bookings.length > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-3.5 border-t border-border text-xs text-muted-foreground bg-muted/20">
             <div>
               Hiển thị{" "}

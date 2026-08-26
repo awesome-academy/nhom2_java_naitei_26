@@ -50,9 +50,11 @@ export default function AdminManageReviewsPage() {
   const loadReviews = React.useCallback(async () => {
     setLoading(true)
     try {
-      setReviews(await adminReviewService.getReviews())
+      const data = await adminReviewService.getReviews()
+      setReviews(Array.isArray(data) ? data : [])
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Unable to load reviews"))
+      setReviews([])
     } finally {
       setLoading(false)
     }
@@ -64,22 +66,24 @@ export default function AdminManageReviewsPage() {
 
   const filteredReviews = React.useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase()
-    return reviews.filter((review) => {
+    const safeReviews = Array.isArray(reviews) ? reviews : []
+    return safeReviews.filter((review) => {
       const matchesKeyword = !normalizedKeyword || [
-        review.reviewerName,
-        review.tourName,
-        review.content,
-        String(review.id),
+        review?.reviewerName,
+        review?.tourName,
+        review?.content,
+        String(review?.id),
       ].some((value) => value?.toLowerCase().includes(normalizedKeyword))
 
-      const matchesRating = ratingFilter === "ALL" || review.rating === Number(ratingFilter)
+      const matchesRating = ratingFilter === "ALL" || review?.rating === Number(ratingFilter)
       return matchesKeyword && matchesRating
     })
   }, [keyword, ratingFilter, reviews])
 
   const averageRating = React.useMemo(() => {
-    if (reviews.length === 0) return 0
-    return reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+    const safeReviews = Array.isArray(reviews) ? reviews : []
+    if (safeReviews.length === 0) return 0
+    return safeReviews.reduce((sum, review) => sum + (review?.rating || 0), 0) / safeReviews.length
   }, [reviews])
 
   const handleDelete = async () => {
@@ -119,7 +123,7 @@ export default function AdminManageReviewsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total reviews</CardDescription>
-            <CardTitle className="text-3xl">{reviews.length}</CardTitle>
+            <CardTitle className="text-3xl">{Array.isArray(reviews) ? reviews.length : 0}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -135,7 +139,7 @@ export default function AdminManageReviewsPage() {
           <CardHeader className="pb-2">
             <CardDescription>Low ratings (1–2 stars)</CardDescription>
             <CardTitle className="text-3xl">
-              {reviews.filter((review) => review.rating <= 2).length}
+              {(Array.isArray(reviews) ? reviews : []).filter((review) => (review?.rating || 0) <= 2).length}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -192,7 +196,7 @@ export default function AdminManageReviewsPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ) : filteredReviews.length === 0 ? (
+                ) : !Array.isArray(filteredReviews) || filteredReviews.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-32 text-center text-slate-500">
                       No reviews match the current filters.

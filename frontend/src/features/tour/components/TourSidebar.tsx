@@ -57,9 +57,9 @@ export default function TourSidebar({ filters, update, clear, activeCount, categ
         <Input value={filters.keyword} onChange={(e) => update("keyword", e.target.value)} placeholder="Tìm kiếm tour..." />
       </div>
       
-      <CheckGroup label="Danh mục" options={categories.map(c => c.name)} selected={filters.categories} onChange={(v) => update("categories", v)} />
-      <CheckGroup label="Điểm đến" options={destinations.slice(0, 6)} selected={filters.destinations} onChange={(v) => update("destinations", v)} />
-      <CheckGroup label="Khởi hành từ" options={departures} selected={filters.departures} onChange={(v) => update("departures", v)} />
+      <CheckGroup label="Danh mục" options={Array.isArray(categories) ? categories.map(c => c.name) : []} selected={filters.categories} onChange={(v) => update("categories", v)} />
+      <CheckGroup label="Điểm đến" options={Array.isArray(destinations) ? destinations.slice(0, 6) : []} selected={filters.destinations} onChange={(v) => update("destinations", v)} />
+      <CheckGroup label="Khởi hành từ" options={Array.isArray(departures) ? departures : []} selected={filters.departures} onChange={(v) => update("departures", v)} />
       
       {/* Price */}
       <div className="border-b border-slate-100 pb-4 mb-4">

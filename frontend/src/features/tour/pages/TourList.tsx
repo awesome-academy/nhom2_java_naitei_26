@@ -231,7 +231,7 @@ export default function TourList() {
                     <button onClick={() => update("keyword", "")}>×</button>
                   </span>
                 )}
-                {filters.categories.map((c) => (
+                {Array.isArray(filters.categories) && filters.categories.map((c) => (
                   <span
                     key={c}
                     className="bg-brand/10 text-brand-dark rounded-full text-xs font-semibold px-3 py-1"

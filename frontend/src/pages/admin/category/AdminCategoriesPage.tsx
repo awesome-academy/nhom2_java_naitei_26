@@ -55,7 +55,7 @@ export default function AdminCategoriesPage() {
   const fetchCategories = React.useCallback(() => {
     setLoading(true);
     getAdminCategories()
-      .then((data) => setCategories(data))
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch((err) => {
         console.error(err);
         toast.error("Failed to load categories!", {

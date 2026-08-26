@@ -3,14 +3,15 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { DailyRevenue } from "@/features/admin/types/revenue"; // Import type
 
 interface OverviewChartProps {
-  data: DailyRevenue[]; // Define props for real data
+  data?: DailyRevenue[];
 }
 
-export function OverviewChart({ data }: OverviewChartProps) {
+export function OverviewChart({ data = [] }: OverviewChartProps) {
   // Format date from YYYY-MM-DD to DD/MM for better UI
-  const chartData = data.map(item => ({
-    name: new Date(item.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
-    revenue: item.amount,
+  const safeData = Array.isArray(data) ? data : [];
+  const chartData = safeData.map(item => ({
+    name: item?.date ? new Date(item.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) : '',
+    revenue: Number(item?.amount) || 0,
   }));
 
   const formatYAxis = (value: number) => {

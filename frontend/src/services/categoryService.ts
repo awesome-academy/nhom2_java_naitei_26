@@ -25,8 +25,16 @@ export function mapCategoryResponseToCategory(res: CategoryResponse): Category {
 
 export async function getCategories(): Promise<Category[]> {
   try {
-    const response = await apiClient.get<CategoryResponse[]>('/api/categories');
-    return response.data.map(mapCategoryResponseToCategory);
+    const response = await apiClient.get<any>('/api/categories');
+    const raw = response?.data;
+    const items: CategoryResponse[] = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.content)
+      ? raw.content
+      : Array.isArray(raw?.data)
+      ? raw.data
+      : [];
+    return items.map(mapCategoryResponseToCategory);
   } catch (error) {
     console.error('Failed to fetch categories:', error);
     return [];
@@ -34,8 +42,23 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getAdminCategories(): Promise<CategoryResponse[]> {
-  const response = await apiClient.get<CategoryResponse[]>('/api/admin/categories');
-  return response.data;
+  try {
+    const response = await apiClient.get<any>('/api/admin/categories');
+    const raw = response?.data;
+    if (Array.isArray(raw)) {
+      return raw;
+    }
+    if (Array.isArray(raw?.content)) {
+      return raw.content;
+    }
+    if (Array.isArray(raw?.data)) {
+      return raw.data;
+    }
+    return [];
+  } catch (error) {
+    console.error('Failed to fetch admin categories:', error);
+    return [];
+  }
 }
 
 export async function getAdminCategoryById(id: number): Promise<CategoryResponse> {

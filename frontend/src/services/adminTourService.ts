@@ -50,17 +50,44 @@ export interface FetchAdminToursParams {
 }
 
 export async function getAdminTours(params?: FetchAdminToursParams): Promise<PageResponse<BackendTourResponse>> {
-  const queryParams: Record<string, any> = {};
-  if (params?.keyword) queryParams.keyword = params.keyword;
-  if (params?.categoryId) queryParams.categoryId = params.categoryId;
-  if (params?.page !== undefined) queryParams.page = params.page;
-  if (params?.size !== undefined) queryParams.size = params.size;
-  if (params?.sort) queryParams.sort = params.sort;
+  try {
+    const queryParams: Record<string, any> = {};
+    if (params?.keyword) queryParams.keyword = params.keyword;
+    if (params?.categoryId) queryParams.categoryId = params.categoryId;
+    if (params?.page !== undefined) queryParams.page = params.page;
+    if (params?.size !== undefined) queryParams.size = params.size;
+    if (params?.sort) queryParams.sort = params.sort;
 
-  const response = await apiClient.get<PageResponse<BackendTourResponse>>('/api/admin/tours', {
-    params: queryParams,
-  });
-  return response.data;
+    const response = await apiClient.get<any>('/api/admin/tours', {
+      params: queryParams,
+    });
+    const data = response?.data;
+    if (Array.isArray(data)) {
+      return {
+        content: data,
+        totalPages: 1,
+        totalElements: data.length,
+        number: 0,
+        size: data.length,
+      };
+    }
+    return {
+      content: Array.isArray(data?.content) ? data.content : [],
+      totalPages: typeof data?.totalPages === 'number' ? data.totalPages : 1,
+      totalElements: typeof data?.totalElements === 'number' ? data.totalElements : (data?.content?.length || 0),
+      number: typeof data?.number === 'number' ? data.number : 0,
+      size: typeof data?.size === 'number' ? data.size : 10,
+    };
+  } catch (error) {
+    console.error('Failed to fetch admin tours:', error);
+    return {
+      content: [],
+      totalPages: 1,
+      totalElements: 0,
+      number: 0,
+      size: 10,
+    };
+  }
 }
 
 export async function getAdminTourById(id: number): Promise<BackendTourResponse> {

@@ -115,20 +115,38 @@ export default function AdminToursPage() {
       page,
       size: 8,
     })
-      .then((data) => setToursData(data))
+      .then((data) => {
+        setToursData({
+          content: Array.isArray(data?.content) ? data.content : [],
+          totalPages: typeof data?.totalPages === 'number' ? data.totalPages : 1,
+          totalElements: typeof data?.totalElements === 'number' ? data.totalElements : 0,
+          number: typeof data?.number === 'number' ? data.number : 0,
+          size: typeof data?.size === 'number' ? data.size : 8,
+        });
+      })
       .catch((err) => {
         console.error(err);
         toast.error("Failed to load tours list!");
+        setToursData({
+          content: [],
+          totalPages: 1,
+          totalElements: 0,
+          number: 0,
+          size: 8,
+        });
       })
       .finally(() => setLoading(false));
   }, [keyword, selectedCategory, page]);
 
   React.useEffect(() => {
     getAdminCategories().then((cats) => {
-      setCategories(cats);
-      if (cats.length > 0) {
-        setFormData((prev) => ({ ...prev, categoryId: cats[0].id }));
+      const validCats = Array.isArray(cats) ? cats : [];
+      setCategories(validCats);
+      if (validCats.length > 0) {
+        setFormData((prev) => ({ ...prev, categoryId: validCats[0].id }));
       }
+    }).catch(() => {
+      setCategories([]);
     });
   }, []);
 
@@ -513,7 +531,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {toursData.content.length > 0 ? (
+                {Array.isArray(toursData?.content) && toursData.content.length > 0 ? (
                   toursData.content.map((tour) => {
                     const statusUpper = String(tour.status || "").toUpperCase();
                     const isAvailable = statusUpper === "PUBLISHED" || statusUpper === "AVAILABLE";
@@ -620,7 +638,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
           {/* Table Footer / Pagination */}
           <div className="flex items-center justify-between px-6 py-3 border-t text-xs text-muted-foreground">
             <div>
-              Page <span className="font-semibold text-foreground">{page + 1}</span> of {toursData.totalPages} ({toursData.totalElements} tours)
+              Page <span className="font-semibold text-foreground">{page + 1}</span> of {toursData?.totalPages || 1} ({toursData?.totalElements || 0} tours)
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -636,7 +654,7 @@ function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCE
                 variant="outline"
                 size="icon"
                 className="size-7"
-                disabled={page + 1 >= toursData.totalPages}
+                disabled={page + 1 >= (toursData?.totalPages || 1)}
                 onClick={() => setPage(page + 1)}
               >
                 <ChevronRightIcon className="size-3.5" />
