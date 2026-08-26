@@ -14,7 +14,7 @@ export function AdminBookingTable({ bookings, onViewDetails, onStatusChanged }: 
   if (!bookings || bookings.length === 0) {
     return (
       <div className="py-12 text-center border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
-        <p className="text-sm text-slate-500">Không có dữ liệu booking nào.</p>
+        <p className="text-sm text-slate-500">No booking data found.</p>
       </div>
     );
   }
@@ -24,12 +24,12 @@ export function AdminBookingTable({ bookings, onViewDetails, onStatusChanged }: 
       <table className="w-full text-sm text-left">
         <thead className="text-xs text-slate-500 bg-slate-50/80 uppercase border-y border-slate-100">
           <tr>
-            <th className="px-6 py-4 font-semibold">Mã Đặt</th>
-            <th className="px-6 py-4 font-semibold">Khách Hàng</th>
+            <th className="px-6 py-4 font-semibold">Booking ID</th>
+            <th className="px-6 py-4 font-semibold">Customer</th>
             <th className="px-6 py-4 font-semibold">Tour</th>
-            <th className="px-6 py-4 font-semibold">Tổng Tiền</th>
-            <th className="px-6 py-4 font-semibold">Trạng Thái</th>
-            <th className="px-6 py-4 font-semibold text-right">Thao Tác</th>
+            <th className="px-6 py-4 font-semibold">Total Price</th>
+            <th className="px-6 py-4 font-semibold">Status</th>
+            <th className="px-6 py-4 font-semibold text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 bg-white">
@@ -46,7 +46,7 @@ export function AdminBookingTable({ bookings, onViewDetails, onStatusChanged }: 
                 <div className="text-slate-900 max-w-[320px] truncate" title={booking.tourName}>
                   {booking.tourName}
                 </div>
-                <div className="text-slate-500 text-xs">KH: {booking.departureDate?.split('-').reverse().join('/')}</div>
+                <div className="text-slate-500 text-xs">Dep: {booking.departureDate?.split('-').reverse().join('/')}</div>
               </td>
               <td className="px-6 py-4 font-medium text-brand">
                 {formatPrice(booking.totalPrice)}
@@ -64,7 +64,7 @@ export function AdminBookingTable({ bookings, onViewDetails, onStatusChanged }: 
                 <button
                   onClick={() => onViewDetails(booking)}
                   className="p-2 text-slate-400 hover:text-brand hover:bg-brand/10 rounded-lg transition-colors"
-                  title="Xem chi tiết"
+                  title="View Details"
                 >
                   <Eye className="w-4 h-4" />
                 </button>

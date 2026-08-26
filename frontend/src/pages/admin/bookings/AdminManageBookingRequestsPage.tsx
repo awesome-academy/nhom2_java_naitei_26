@@ -102,9 +102,9 @@ export default function AdminManageBookingRequestsPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Quản lý Booking</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Manage Bookings</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Quản lý và duyệt các yêu cầu đặt tour từ khách hàng
+            Manage and approve tour booking requests from customers
           </p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function AdminManageBookingRequestsPage() {
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Tổng số Booking
+              Total Bookings
             </CardDescription>
             <div className="size-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
               <Ticket className="size-4" />
@@ -126,7 +126,7 @@ export default function AdminManageBookingRequestsPage() {
               {stats.total}
             </div>
             <p className="text-xs text-muted-foreground">
-              Tổng số đặt chỗ trên hệ thống
+              Total bookings in the system
             </p>
           </CardContent>
         </Card>
@@ -135,7 +135,7 @@ export default function AdminManageBookingRequestsPage() {
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Đã xác nhận
+              Confirmed
             </CardDescription>
             <div className="size-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <CheckCircle2 className="size-4" />
@@ -152,7 +152,7 @@ export default function AdminManageBookingRequestsPage() {
               )}
             </div>
             <p className="text-xs text-emerald-600 font-medium">
-              Khách đã thanh toán xong
+              Customers have completed payment
             </p>
           </CardContent>
         </Card>
@@ -161,7 +161,7 @@ export default function AdminManageBookingRequestsPage() {
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Đang chờ thanh toán
+              Pending Payment
             </CardDescription>
             <div className="size-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
               <Clock className="size-4" />
@@ -172,7 +172,7 @@ export default function AdminManageBookingRequestsPage() {
               {stats.pending}
             </div>
             <p className="text-xs text-amber-600 font-medium">
-              Chờ khách chuyển khoản
+              Waiting for bank transfer
             </p>
           </CardContent>
         </Card>
@@ -181,7 +181,7 @@ export default function AdminManageBookingRequestsPage() {
         <Card className="shadow-xs border-border/80 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardDescription className="text-xs font-semibold text-muted-foreground">
-              Hủy bỏ / Hết hạn
+              Cancelled / Expired
             </CardDescription>
             <div className="size-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
               <Ban className="size-4" />
@@ -192,7 +192,7 @@ export default function AdminManageBookingRequestsPage() {
               {stats.failed}
             </div>
             <p className="text-xs text-rose-600 font-medium">
-              Bị hủy hoặc quá hạn thanh toán
+              Cancelled or payment overdue
             </p>
           </CardContent>
         </Card>
@@ -205,7 +205,7 @@ export default function AdminManageBookingRequestsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Tìm theo mã, tên khách hàng..."
+              placeholder="Search by code, customer name..."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               className="w-full pl-10 pr-10 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
@@ -231,11 +231,11 @@ export default function AdminManageBookingRequestsPage() {
               }}
               className="px-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand/20 focus:border-brand"
             >
-              <option value="">Tất cả trạng thái</option>
-              <option value="PENDING_PAYMENT">Chờ thanh toán</option>
-              <option value="CONFIRMED">Đã xác nhận</option>
-              <option value="CANCELLED">Đã hủy</option>
-              <option value="EXPIRED">Hết hạn</option>
+              <option value="">All Statuses</option>
+              <option value="PENDING_PAYMENT">Pending Payment</option>
+              <option value="CONFIRMED">Confirmed</option>
+              <option value="CANCELLED">Cancelled</option>
+              <option value="EXPIRED">Expired</option>
             </select>
           </div>
         </div>
@@ -261,15 +261,15 @@ export default function AdminManageBookingRequestsPage() {
         {bookings.length > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-3.5 border-t border-border text-xs text-muted-foreground bg-muted/20">
             <div>
-              Hiển thị{" "}
+              Showing{" "}
               <span className="font-semibold text-foreground">
                 {bookings.length}
               </span>{" "}
-              trên tổng số{" "}
+              of{" "}
               <span className="font-semibold text-foreground">
                 {totalElements}
               </span>{" "}
-              booking
+              bookings
             </div>
             <div className="flex items-center gap-1.5">
               <button
@@ -278,17 +278,17 @@ export default function AdminManageBookingRequestsPage() {
                 className="inline-flex items-center justify-center h-8 px-2.5 text-xs font-medium border border-input rounded-md bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5 mr-1" />
-                Trước
+                Prev
               </button>
               <div className="px-3 py-1 bg-background border border-border rounded-md font-mono text-xs font-semibold text-foreground">
-                Trang {page + 1} / {Math.max(totalPages, 1)}
+                Page {page + 1} / {Math.max(totalPages, 1)}
               </div>
               <button
                 disabled={page >= totalPages - 1}
                 onClick={() => setPage((p) => p + 1)}
                 className="inline-flex items-center justify-center h-8 px-2.5 text-xs font-medium border border-input rounded-md bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 transition-colors"
               >
-                Sau
+                Next
                 <ChevronRight className="w-3.5 h-3.5 ml-1" />
               </button>
             </div>

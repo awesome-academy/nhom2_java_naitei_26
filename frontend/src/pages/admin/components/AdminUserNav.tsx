@@ -47,17 +47,19 @@ export function AdminUserNav() {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-semibold leading-none text-foreground">{displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
-            <div className="mt-1">
-              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                {user?.role || "System Admin"}
-              </span>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-semibold leading-none text-foreground">{displayName}</p>
+              <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
+              <div className="mt-1">
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  {user?.role || "System Admin"}
+                </span>
+              </div>
             </div>
-          </div>
-        </DropdownMenuLabel>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
@@ -86,14 +88,16 @@ export function AdminUserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={handleLogout}
-          className="cursor-pointer text-xs text-destructive focus:bg-destructive/10 focus:text-destructive"
-        >
-          <LogOutIcon className="mr-2 size-3.5" />
-          Log out
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="cursor-pointer text-xs text-destructive focus:bg-destructive/10 focus:text-destructive"
+          >
+            <LogOutIcon className="mr-2 size-3.5" />
+            Log out
+            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )

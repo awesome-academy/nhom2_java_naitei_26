@@ -54,7 +54,7 @@ export function AdminBookingDetailModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-slate-900">
-              Chi tiết Đặt chỗ #{details.id}
+              Booking Details #{details.id}
             </h2>
             {loadingExtra && (
               <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
@@ -74,11 +74,11 @@ export function AdminBookingDetailModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">
-                  Thông tin Khách hàng
+                  Customer Information
                 </h3>
                 <div className="space-y-2 text-sm">
                   <p>
-                    <span className="text-slate-500">Người đặt:</span>{" "}
+                    <span className="text-slate-500">Booker:</span>{" "}
                     <span className="font-medium">{details.userName}</span>
                   </p>
                   <p>
@@ -86,22 +86,22 @@ export function AdminBookingDetailModal({
                     {details.userEmail}
                   </p>
                   <p>
-                    <span className="text-slate-500">Tên liên hệ:</span>{" "}
+                    <span className="text-slate-500">Contact Name:</span>{" "}
                     {details.contactName}
                   </p>
                   <p>
-                    <span className="text-slate-500">SĐT liên hệ:</span>{" "}
+                    <span className="text-slate-500">Contact Phone:</span>{" "}
                     {details.contactPhone}
                   </p>
                   <p>
-                    <span className="text-slate-500">Email liên hệ:</span>{" "}
+                    <span className="text-slate-500">Contact Email:</span>{" "}
                     {details.contactEmail}
                   </p>
                 </div>
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">
-                  Thông tin Chuyến đi
+                  Trip Information
                 </h3>
                 <div className="space-y-2 text-sm">
                   <p>
@@ -109,21 +109,21 @@ export function AdminBookingDetailModal({
                     <span className="font-medium">{details.tourName}</span>
                   </p>
                   <p>
-                    <span className="text-slate-500">Ngày khởi hành:</span>{" "}
+                    <span className="text-slate-500">Departure Date:</span>{" "}
                     {details.departureDate?.split("-").reverse().join("/")}
                   </p>
                   <p>
-                    <span className="text-slate-500">Ngày đặt:</span>{" "}
+                    <span className="text-slate-500">Booking Date:</span>{" "}
                     {details.bookingDate
-                      ? new Date(details.bookingDate).toLocaleString("vi-VN")
+                      ? new Date(details.bookingDate).toLocaleString("en-US")
                       : "N/A"}
                   </p>
                   <p>
-                    <span className="text-slate-500">Số lượng người:</span>{" "}
+                    <span className="text-slate-500">Number of People:</span>{" "}
                     {details.numberOfPeople}
                   </p>
                   <p>
-                    <span className="text-slate-500">Trạng thái:</span>{" "}
+                    <span className="text-slate-500">Status:</span>{" "}
                     <BookingStatusBadge
                       status={details.status}
                       className="ml-2"
@@ -135,7 +135,7 @@ export function AdminBookingDetailModal({
 
             <div>
               <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">
-                Danh sách Hành khách
+                Passenger List
               </h3>
               <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden relative min-h-[60px]">
                 {loadingExtra && !details.travelers ? (
@@ -147,15 +147,15 @@ export function AdminBookingDetailModal({
                 <table className="w-full text-sm text-left">
                   <thead className="bg-slate-100/50 text-slate-500 border-b border-slate-200">
                     <tr>
-                      <th className="px-4 py-2 font-medium">Họ tên</th>
+                      <th className="px-4 py-2 font-medium">Full Name</th>
                       <th className="px-4 py-2 font-medium text-center">
-                        Phân loại
+                        Category
                       </th>
                       <th className="px-4 py-2 font-medium text-center">
-                        Giới tính
+                        Gender
                       </th>
                       <th className="px-4 py-2 font-medium text-center">
-                        Ngày sinh
+                        Date of Birth
                       </th>
                     </tr>
                   </thead>
@@ -176,18 +176,18 @@ export function AdminBookingDetailModal({
                               className={`px-2 py-0.5 rounded-full ${t.travelerType === "ADULT" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}
                             >
                               {t.travelerType === "ADULT"
-                                ? "Người lớn"
+                                ? "Adult"
                                 : t.travelerType === "CHILD"
-                                  ? "Trẻ em"
-                                  : "Em bé"}
+                                  ? "Child"
+                                  : "Infant"}
                             </span>
                           </td>
                           <td className="px-4 py-2 text-center">
                             {t.gender === "MALE"
-                              ? "Nam"
+                              ? "Male"
                               : t.gender === "FEMALE"
-                                ? "Nữ"
-                                : "Khác"}
+                                ? "Female"
+                                : "Other"}
                           </td>
                           <td className="px-4 py-2 text-center text-slate-500">
                             {t.dateOfBirth
@@ -203,8 +203,8 @@ export function AdminBookingDetailModal({
                           className="px-4 py-4 text-center text-slate-500 italic"
                         >
                           {loadingExtra
-                            ? "Đang tải dữ liệu..."
-                            : "Không có dữ liệu hành khách"}
+                            ? "Loading data..."
+                            : "No passenger data"}
                         </td>
                       </tr>
                     )}
@@ -215,7 +215,7 @@ export function AdminBookingDetailModal({
 
             <div>
               <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">
-                Thanh toán
+                Payment
               </h3>
               <div className="bg-brand/5 rounded-xl border border-brand/10 p-4 relative">
                 {loadingExtra && !details.payment ? (
@@ -226,7 +226,7 @@ export function AdminBookingDetailModal({
 
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-slate-500">
-                    Tổng thanh toán:
+                    Total Payment:
                   </span>
                   <span className="text-lg font-bold text-brand">
                     {formatPrice(details.totalPrice)}
@@ -235,13 +235,13 @@ export function AdminBookingDetailModal({
                 {details.payment && (
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-slate-500">
-                      Phương thức:{" "}
+                      Method:{" "}
                       <span className="font-medium text-slate-900">
-                        {details.payment.method || "Chưa chọn"}
+                        {details.payment.method || "Not selected"}
                       </span>
                     </span>
                     <span className="text-slate-500">
-                      Tình trạng:{" "}
+                      Status:{" "}
                       <span className="font-medium text-slate-900">
                         {details.payment.status || "N/A"}
                       </span>
